@@ -219,12 +219,241 @@ Status of node 'rabbit@claire-i5' ...
 
 			<div>
 				<h2 id="logstash">Etape 1 : LogStash</h2>
+<p>
 Dans cette étape, nous allons lire un fichier de logs avec LogStash, découper ces logs pour leur ajouter de la sémantique, et les faire écrire dans la sortie standard. 
+</p>
+<p>
+Pour commencer, nous allons avoir besoin de logs à lire. Pour cela, enregistrer dans <code>$MY_DIR</code> <a href="./files/logstash-tutorial-small.log">ce fichier</a>.
+</p>
+<p>
+Créer ensuite dans <code>$MY_DIR</code> un fichier nommé <code>logstash.conf</code>. L'éditer avec l'éditeur de texte de votre choix, et y placer le code suivant en remplaçant <code>$MY_DIR</code> par sa valeur (par exemple <code>/home/cvillard/elk</code>) :
+<pre>
+# C'est un commentaire
+input {
+	# On définit ici les sources de données à traiter
+	file {
+		path => "$MY_DIR/logstash-tutorial-small.log"
+		start_position => beginning 
+	}
+}
 
-				<div class="alert alert-danger" role="alert">
-					TODO
+output {
+	# on définit ici les destinations pour les données traitées
+	stdout {
+		# Sortie standard : pas de paramètres
+	}
+}
+
+</pre>
+</p>
+<p>
+Démarrer LogStash en lui indiquant le fichier de configuration : 
+<pre>
+$ ./logstash-2.1.0/bin/logstash agent -f './logstash.conf'
+Settings: Default filter workers: 2
+Logstash startup completed
+2015-11-28T15:34:10.995Z claire-i5 83.149.9.216 - - [04/Jan/2015:05:13:42 +0000] "GET /presentations/logstash-monitorama-2013/images/kibana-search.png HTTP/1.1" 200 203023 "http://semicomplete.com/presentations/logstash-monitorama-2013/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36"
+</pre>
+Vous devriez voir s'afficher dans la console le contenu du fichier, la ligne étant précédée d'un timestamp et du nom de votre PC ajoutés automatiquement par LogStash (<code>2015-11-28T15:34:10.995Z claire-i5</code> dans mon exemple).
+</p>
+<p>
+Interrompre LogStash avec <code>Ctrl+C</code> : 
+<pre>
+^CSIGINT received. Shutting down the pipeline. {:level=>:warn}
+Logstash shutdown completed
+</pre>
+</p>	
+
+<p>
+Nous avons donc lu un fichier avec LogStash et l'avons recopié sur la sortie standard. C'est un bon début, mais ce n'est pas suffisant. Nous allons maintenant modifier la configuration pour découper chaque ligne lue dans le fichier en un message JSON contenant des champs nommé. Cela permettra d'ajouter de la sémantique à chaque ligne, et ensuite de faire des recherches une fois dans ElasticSearch.
+</p>
+
+				<div class="alert alert-info" role="alert">
+<p>
+Pour éviter de relire des lignes déjà lues en cas de redémarrage de LogStash, celui-ci stocke sur le disque l'endroit où il se trouve dans les fichiers qu'il lit. Par défaut, il crée des fichiers <code>.sincedb_*</code> dans le <code>$HOME</code> de l'utilisateur qui le lance. 
+</p>
+<p>
+Ainsi, pour faire relire à LogStash un fichier déjà lu, il faut enlever la ligne contenant l'inode de ce fichier dans le fichier <code>.sincedb_*</code> correspondant (ou supprimer le fichier entier).
+</p>
+<p>
+Il est également possible de paramétrer l'endroit où LogStash écrit ses informations et le nom du fichier correspondant pour éviter de polluer le dossier home et rendre le nom plus explicite que <code>.sincedb_1bd0462c651e913184f7efa9f40f84c6</code> :
+<pre>
+input {
+	# On définit ici les sources de données à traiter
+	file {
+		path => "$MY_DIR/logstash-tutorial-small.log"
+		start_position => beginning 
+		# on customise le sincedb_path et le nom du fichier
+		sincedb_path => "/var/log/logstash/sincedb_apache.log"
+	}
+}
+</pre>
+</p>
 				</div>
-				
+<p>
+LogStash embarque des patterns pour traiter un grand nombre de formats de logs courants. C'est le cas pour les logs Apache traités ici.
+</p>
+<p>
+Ouvrir le fichier <code>logstash.conf</code> créé précédemment et ajouter le bloc suivant entre le bloc <code>input</code> et le bloc <code>output</code> :
+<pre>
+filter {
+	grok {
+		match => { "message" => "%{COMBINEDAPACHELOG}"}
+	}
+}
+</pre>
+De plus, on va modifier l'output <code>stdout</code> pour qu'il écrive le message complet en JSON au lieu de le résumer : 
+<pre>
+output {
+	# on définit ici les destinations pour les données traitées
+	stdout {
+		codec => json
+	}
+}
+</pre>
+</p>
+<p>
+N'oubliez pas de supprimer le fichier <code>.sincedb_*</code> puis redémarrez LogStash avec la même commande que précédemment.
+<pre>
+$ ./logstash-2.1.0/bin/logstash agent -f './logstash.conf'
+Settings: Default filter workers: 2
+Logstash startup completed
+{"message":"83.149.9.216 - - [04/Jan/2015:05:13:42 +0000] \"GET /presentations/logstash-monitorama-2013/images/kibana-search.png HTTP/1.1\" 200 203023 \"http://semicomplete.com/presentations/logstash-monitorama-2013/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\"","@version":"1","@timestamp":"2015-11-28T16:10:15.811Z","host":"claire-i5","path":"/home/claire/Documents/atelier_es_mydir/logstash-tutorial-small.log","clientip":"83.149.9.216","ident":"-","auth":"-","timestamp":"04/Jan/2015:05:13:42 +0000","verb":"GET","request":"/presentations/logstash-monitorama-2013/images/kibana-search.png","httpversion":"1.1","response":"200","bytes":"203023","referrer":"\"http://semicomplete.com/presentations/logstash-monitorama-2013/\"","agent":"\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\""}
+^CSIGINT received. Shutting down the pipeline. {:level=>:warn}
+Logstash shutdown completed
+</pre>
+</p>
+<p>
+Une fois mis en forme, on voit que la ligne de log a maintenant la forme suivante :
+<pre>
+{
+	"message":"83.149.9.216 - - [04/Jan/2015:05:13:42 +0000] \"GET /presentations/logstash-monitorama-2013/images/kibana-search.png HTTP/1.1\" 200 203023 \"http://semicomplete.com/presentations/logstash-monitorama-2013/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\"",
+	"@version":"1",
+	"@timestamp":"2015-11-28T16:10:15.811Z",
+	"host":"claire-i5",
+	"path":"/home/claire/Documents/atelier_es_mydir/logstash-tutorial-small.log",
+	"clientip":"83.149.9.216",
+	"ident":"-",
+	"auth":"-",
+	"timestamp":"04/Jan/2015:05:13:42 +0000",
+	"verb":"GET",
+	"request":"/presentations/logstash-monitorama-2013/images/kibana-search.png",
+	"httpversion":"1.1",
+	"response":"200",
+	"bytes":"203023",
+	"referrer":"\"http://semicomplete.com/presentations/logstash-monitorama-2013/\"",
+	"agent":"\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\""
+}
+</pre>
+Les différentes partie du log d'origine ont été découpées et placées dans des champs nommés. La ligne d'origine est elle conservée en l'état dans le champ <code>message</code>.
+</p>
+
+				<div class="alert alert-info" role="alert">
+<p>
+<strong>Qu'avons-nous fait ?</strong>
+</p>
+<p>
+En ajoutant ce filtre, nous avons utilisé GROK. C'est un outil utilisant une syntaxe pouvant s'apparenter aux expressions régulières, et qui dans LogStash permet de découper un champ (<code>message</code> dans notre cas) en plusieurs champs nommés.
+</p>
+<p>
+Par exemple, le pattern prédéfini que nous avons utilisé est défini par la syntaxe suivante :
+<pre>
+COMBINEDAPACHELOG %{COMMONAPACHELOG} %{QS:referrer} %{QS:agent}
+</pre>
+On voit qu'il fait lui-même référence à d'autres patterns : <code>COMMONAPACHELOG</code> et <code>QS</code>. La configuration complète donne : 
+<pre>
+WORD \b\w+\b
+NOTSPACE \S+
+BASE10NUM (?&lt;![0-9.+-])(?&gt;[+-]?(?:(?:[0-9]+(?:\.[0-9]+)?)|(?:\.[0-9]+)))
+NUMBER (?:%{BASE10NUM})
+INT (?:[+-]?(?:[0-9]+))
+DATA .*?
+
+MONTHDAY (?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9])
+MONTH \b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b
+YEAR (?&gt;\d\d){1,2}
+
+HOUR (?:2[0123]|[01]?[0-9])
+MINUTE (?:[0-5][0-9])
+# '60' is a leap second in most time standards and thus is valid.
+SECOND (?:(?:[0-5][0-9]|60)(?:[:.,][0-9]+)?)
+TIME (?!&lt;[0-9])%{HOUR}:%{MINUTE}(?::%{SECOND})(?![0-9])
+
+IPV6 ((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?
+IPV4 (?&lt;![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9])
+IP (?:%{IPV6}|%{IPV4})
+HOSTNAME \b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,62}))*(\.?|\b)
+
+IPORHOST (?:%{HOSTNAME}|%{IP})
+USERNAME [a-zA-Z0-9._-]+
+USER %{USERNAME}
+HTTPDATE %{MONTHDAY}/%{MONTH}/%{YEAR}:%{TIME} %{INT}
+
+COMMONAPACHELOG %{IPORHOST:clientip} %{USER:ident} %{USER:auth} \[%{HTTPDATE:timestamp}\] "(?:%{WORD:verb} %{NOTSPACE:request}(?: HTTP/%{NUMBER:httpversion})?|%{DATA:rawrequest})" %{NUMBER:response} (?:%{NUMBER:bytes}|-)
+
+QUOTEDSTRING (?&gt;(?&lt;!\\)(?&gt;"(?&gt;\\.|[^\\"]+)+"|""|(?&gt;'(?&gt;\\.|[^\\']+)+')|''|(?&gt;`(?&gt;\\.|[^\\`]+)+`)|``))
+# QS n'est qu'un alias
+QS %{QUOTEDSTRING}
+
+COMBINEDAPACHELOG %{COMMONAPACHELOG} %{QS:referrer} %{QS:agent}
+</pre>
+On est plutôt contents de ne pas avoir eu à l'écrire nous-même, et on comprend également pourquoi GROK est généralement, dans une configuration LogStash, le plus gros consommateur de temps d'exécution. Les améliorations de performances devront avant tout se porter sur l'optimisation des expressions GROK au cas d'usage.
+</p>
+				</div>
+
+				<div class="alert alert-warning" role="alert">
+<p>
+L'extrait de configuration GROK mentionné au dessus contient la ligne suivante pour désigner le mois dans la date :
+<pre>
+MONTH \b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b
+</pre>
+On voit que les noms de mois sont en dur, et en anglais. On ne supporte que la version complète et la version abrégée. 
+</p>
+<p>
+De plus, le pattern de date <code>"dd/MMM/YYYY:HH:mm:ss Z"</code> utilisé juste après dans ce tutoriel dépend de la locale de la machine ou de celle précisée en paramètre du filtre <code>date</code>. 
+</p>
+<p>
+C'est pour ces 2 raisons qu'il faut éviter autant que possible les patterns de date contenant du texte pour les jours et les mois, au profit de leur écriture en chiffre qui elle n'est pas dépendante de la locale et n'est pas ambigüe.
+</p>
+				</div>
+
+<p>
+L'ajout de sémantique à notre log a donc plutôt bien fonctionné. Il reste néanmoins une dernière anomalie au niveau du champ <code>@timestamp</code>. En effet, celui-ci est ajouté automatiquement par LogStash, et renseigné avec l'heure du moment où il a lu la ligne dans le fichier. Dans un cas comme ici où on relis des logs anciens, cette date n'a aucun intérêt : la date intéressante est celle contenue dans le log lui-même, soit le 4 janvier 2015 à 05:13:42 dans notre cas, et qui a été placée dans le champ <code>timestamp</code> (sans <code>@</code>) par le pattern GROK <code>COMBINEDAPACHELOG</code>. Nous allons donc utiliser le filtre <code>date</code> pour lire la valeur String du champ <code>timestamp</code> (sans <code>@</code>), la transformer en timestamp et la placer dans le champ <code>@timestamp</code> (avec <code>@</code>) en remplacement de la valeur automatique.
+</p>
+<p>
+Pour cela, ouvrir le fichier <code>logstash.conf</code>, et ajouter un filtre après le GROK :
+<pre>
+filter {
+	grok {
+		match => { "message" => "%{COMBINEDAPACHELOG}"}
+	}
+	date {
+		# exemple de date: 04/Jan/2015:05:13:42 +0000
+		match => [ "timestamp", "dd/MMM/YYYY:HH:mm:ss Z" ] 
+	}
+}
+</pre>
+</p>
+<p>
+N'oubliez pas de supprimer le fichier <code>.sincedb_*</code> puis redémarrez LogStash avec la même commande que précédemment.
+<pre>
+$ ./logstash-2.1.0/bin/logstash agent -f './logstash.conf'
+Settings: Default filter workers: 2
+Logstash startup completed
+{"message":"83.149.9.216 - - [04/Jan/2015:05:13:42 +0000] \"GET /presentations/logstash-monitorama-2013/images/kibana-search.png HTTP/1.1\" 200 203023 \"http://semicomplete.com/presentations/logstash-monitorama-2013/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\"","@version":"1","@timestamp":"2015-01-04T05:13:42.000Z","host":"claire-i5","path":"/home/claire/Documents/atelier_es_mydir/logstash-tutorial-small.log","clientip":"83.149.9.216","ident":"-","auth":"-","timestamp":"04/Jan/2015:05:13:42 +0000","verb":"GET","request":"/presentations/logstash-monitorama-2013/images/kibana-search.png","httpversion":"1.1","response":"200","bytes":"203023","referrer":"\"http://semicomplete.com/presentations/logstash-monitorama-2013/\"","agent":"\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\""}
+^CSIGINT received. Shutting down the pipeline. {:level=>:warn}
+Logstash shutdown completed
+</pre>
+</p>
+<p>
+Si on compare les champs <code>@timestamp</code> et <code>timestamp</code> dans la sortie on a maintenant les valeurs suivantes :
+<pre>
+	"@timestamp":"2015-01-04T05:13:42.000Z",
+	"timestamp":"04/Jan/2015:05:13:42 +0000",
+</pre>
+
+Les deux valeurs sont bien identiques, on pourra donc une fois dans ElasticSearch faire une recherche sur le champ standard <code>@timestamp</code> et avoir des résultats pertinents...
+</p>
       </div>
 
 			<div>
