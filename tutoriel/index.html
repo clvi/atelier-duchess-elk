@@ -45,6 +45,7 @@
 						<li><a href="#kibana">Etape 3 : Kibana</a></li>
 						<li><a href="#further">Pour aller plus loin...</a>
 							<ul>
+								<li><a href="#rspec">Tests unitaires de LogStash</a>
 								<li><a href="#broker">Utilisation d'un agent et d'un broker de messages</a>
 								<li><a href="#cluster">Clustering</a>
 								<li><a href="#perf">Eléments de performances</a>
@@ -209,12 +210,7 @@ Status of node 'rabbit@claire-i5' ...
 </p>
 <p>Pour les autres distributions, se reporter à la <a href="https://www.rabbitmq.com/download.html">documentation de l'outil</a> (peut nécessiter de compiler Erlang).
 </p>
-
-
-							<h4>Générateur de logs</h4>	
-							<div class="alert alert-danger" role="alert">
-								TODO
-							</div>			
+	
       </div>
 
 			<div>
@@ -399,6 +395,9 @@ COMBINEDAPACHELOG %{COMMONAPACHELOG} %{QS:referrer} %{QS:agent}
 </pre>
 On est plutôt contents de ne pas avoir eu à l'écrire nous-même, et on comprend également pourquoi GROK est généralement, dans une configuration LogStash, le plus gros consommateur de temps d'exécution. Les améliorations de performances devront avant tout se porter sur l'optimisation des expressions GROK au cas d'usage.
 </p>
+<p>
+La mise au point d'un pattern GROK "maison" (non embarqué par défaut), pour traiter un format de log non standard, peut donc s'avérer ardue. Pour aider à sa mise au point, il existe un outil en ligne très pratique : <a href="http://grokdebug.herokuapp.com/">Grok Debugger</a>. Il liste également <a href="http://grokdebug.herokuapp.com/patterns">l'ensemble des patterns embarqués dans LogStash</a>.
+</p>
 				</div>
 
 				<div class="alert alert-warning" role="alert">
@@ -454,6 +453,7 @@ Si on compare les champs <code>@timestamp</code> et <code>timestamp</code> dans 
 
 Les deux valeurs sont bien identiques, on pourra donc une fois dans ElasticSearch faire une recherche sur le champ standard <code>@timestamp</code> et avoir des résultats pertinents...
 </p>
+
       </div>
 
 			<div>
@@ -482,6 +482,19 @@ Dans cette étape, nous allons voir comment Kibana permet de rechercher facileme
 			<div>
 				<h2 id="further">Pour aller plus loin...</h2>
 Nous avons vu une infrastructure simple d'exploitation de logs. Elle souffre de nombreux points faibles : goulets d'étranglements de performances, vulnérabilité aux pannes, impact sur la charge des machines monitorées... Ces points peuvent être résolus par l'ajout de nouvelles briques et l'utilisation de clusters.
+
+				<h3 id="rspec">Tests unitaires de LogStash</h3>
+<p>
+L'écriture d'une configuration LogStash peut être très complexe : patterns GROK, utilisation de conditions sur des champs pour appliquer des opérations particulières, transformations de valeurs de champs... 
+</p>
+<p>
+Pour fiabiliser cela, LogStash fourni un outil de tests unitaires, qui permet de contrôler qu'une entrée a bien été transformée comme prévu...
+</p>
+
+				<div class="alert alert-danger" role="alert">
+					TODO
+				</div>
+
 				
 				<h3 id="broker">Utilisation d'un agent et d'un broker de messages</h3>
 
