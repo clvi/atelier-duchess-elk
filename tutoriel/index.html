@@ -87,24 +87,129 @@ Vérifier que l'installation s'est bien passée en reprenant la commande de vér
 							</div>
 
 							<h4>LogStash</h4>
-<p>Nous utiliserons la dernière version de LogStash : 2.0.0. </p>
-<p>Télécharger le ZIP ou le TAR.GZ de la version 2.0.0 à cette adresse : <a href="https://www.elastic.co/downloads/logstash">https://www.elastic.co/downloads/logstash</a>.</p>
+<p>Nous utiliserons la dernière version de LogStash : 2.1.0. </p>
+<p>Télécharger le ZIP ou le TAR.GZ de la version 2.1.0 à cette adresse : <a href="https://www.elastic.co/downloads/logstash">https://www.elastic.co/downloads/logstash</a>.</p>
 <p>Décompresser l'archive dans <code>$MY_DIR</code>. </p>
+<p>Tester que LogStash se lance bien avec la commande : 
+<pre>
+$ ${MY_DIR}/logstash-2.1.0/bin/logstash version
+logstash 2.1.0
+</pre>
+</p>
 
 							<h4>ElasticSearch</h4>
-<p>Nous utiliserons la dernière version d'ElasticSearch : 2.0.0. </p>
-<p>Télécharger le ZIP ou le TAR de la version 2.0.0 à cette adresse : <a href="https://www.elastic.co/downloads/elasticsearch">https://www.elastic.co/downloads/elasticsearch</a>.</p> 
+<p>Nous utiliserons la dernière version d'ElasticSearch : 2.1.0. </p>
+<p>Télécharger le ZIP ou le TAR de la version 2.1.0 à cette adresse : <a href="https://www.elastic.co/downloads/elasticsearch">https://www.elastic.co/downloads/elasticsearch</a>.</p> 
 <p>Décompresser l'archive dans <code>$MY_DIR</code>.</p> 
+<p>Tester qu'ElasticSearch se lance bien avec la commande : 
+<pre>
+$ ./elasticsearch-2.1.0/bin/elasticsearch
+</pre>
+Une fois la trace suivante reçue dans la console (<code>Kirigi</code> étant le nom du noeud, il change à chaque démarrage) : 
+<pre>
+[2015-11-28 14:03:28,178][INFO ][node                     ] [Kirigi] started
+</pre>
+Contrôler à l'URL <a href="http://localhost:9200/">http://localhost:9200/</a> qu'il répond :
+<pre>
+{
+  "name" : "Kirigi",
+  "cluster_name" : "elasticsearch",
+  "version" : {
+    "number" : "2.1.0",
+    "build_hash" : "72cd1f1a3eee09505e036106146dc1949dc5dc87",
+    "build_timestamp" : "2015-11-18T22:40:03Z",
+    "build_snapshot" : false,
+    "lucene_version" : "5.3.1"
+  },
+  "tagline" : "You Know, for Search"
+}
+</pre>
+</p>
 
 							<h4>Kibana</h4>
-<p>La version de Kibana compatible avec ElasticSearch 2.x est la version 4.2.1. </p>
+<p>La version de Kibana compatible avec ElasticSearch 2.1.x est la version 4.3.0. </p>
 <p>Télécharger la version comaptible avec votre système à l'adresse: <a href="https://www.elastic.co/downloads/kibana">https://www.elastic.co/downloads/kibana</a>. </p>
 <p>Décompresser l'archive dans <code>$MY_DIR</code>. </p>
+<p>Lancer Kibana avec la commande :
+<pre>
+$ ./kibana-4.3.0-linux-x64/bin/kibana
+</pre>
+Une fois la trace suivante obtenue dans la console :
+<pre>
+  log   [14:11:46.405] [info][listening] Server running at http://0.0.0.0:5601
+</pre>
+Vérifier que Kibana répond à l'URL <a href="http://localhost:5601/">http://localhost:5601/</a>. On ne va rien configurer pour l'instant, cela fera partie de la suite du tutoriel.
+</p>
 
 							<h4>RabbitMQ</h4>
-<p>Télécharger l'installeur Windows, le ZIP ou le TAR.GZ de binaires à l'adresse <a href="https://www.rabbitmq.com/download.html">https://www.rabbitmq.com/download.html</a>. 
+<p>Erlang est nécessaire au fonctionnement de RabbitMQ.
 </p>
-<p>Décompresser l'archive dans  <code>$MY_DIR</code>, ou exécuter l'installeur pour Windows en conservant les options par défaut. </p>
+<p><strong>Windows</strong></p>
+<p>
+Télécharger le package Erlang pour Windows 64 bits à l'adresse : <a href="http://www.erlang.org/download.html">http://www.erlang.org/download.html</a>.
+</p>
+<p>Exécuter l'installeur pour Windows en conservant les options par défaut. </p>
+
+<p>Télécharger l'installeur Windows à l'adresse <a href="https://www.rabbitmq.com/download.html">https://www.rabbitmq.com/download.html</a>. 
+</p>
+<p>Exécuter l'installeur pour Windows en conservant les options par défaut. </p>
+
+<p><strong>Linux</strong></p>
+
+<p>Pour Ubuntu, installer le package fourni dans les dépots, il contient toutes les dépendances nécessaires :
+<pre>
+$ sudo aptitude install rabbitmq-server
+</pre>
+L'installation du paquet déclenche le démarrage du serveur. Contrôler cela via la commande :
+<pre>
+$ sudo rabbitmqctl status
+Status of node 'rabbit@claire-i5' ...
+[{pid,16510},
+ {running_applications,[{rabbit,"RabbitMQ","3.5.4"},
+                        {mnesia,"MNESIA  CXC 138 12","4.13"},
+                        {os_mon,"CPO  CXC 138 46","2.4"},
+                        {xmerl,"XML parser","1.3.8"},
+                        {sasl,"SASL  CXC 138 11","2.5"},
+                        {stdlib,"ERTS  CXC 138 10","2.5"},
+                        {kernel,"ERTS  CXC 138 10","4.0"}]},
+ {os,{unix,linux}},
+ {erlang_version,"Erlang/OTP 18 [erts-7.0] [source] [64-bit] [smp:4:4] [async-threads:64] [kernel-poll:true]\n"},
+ {memory,[{total,42831280},
+          {connection_readers,0},
+          {connection_writers,0},
+          {connection_channels,0},
+          {connection_other,2712},
+          {queue_procs,2712},
+          {queue_slave_procs,0},
+          {plugins,0},
+          {other_proc,13403656},
+          {mnesia,61024},
+          {mgmt_db,0},
+          {msg_index,46816},
+          {other_ets,761048},
+          {binary,13248},
+          {code,16907095},
+          {atom,654217},
+          {other_system,10978752}]},
+ {alarms,[]},
+ {listeners,[{clustering,25672,"::"},{amqp,5672,"::"}]},
+ {vm_memory_high_watermark,0.4},
+ {vm_memory_limit,3341025280},
+ {disk_free_limit,50000000},
+ {disk_free,51512127488},
+ {file_descriptors,[{total_limit,65436},
+                    {total_used,3},
+                    {sockets_limit,58890},
+                    {sockets_used,1}]},
+ {processes,[{limit,1048576},{used,126}]},
+ {run_queue,0},
+ {uptime,248}]
+
+</pre>
+</p>
+<p>Pour les autres distributions, se reporter à la <a href="https://www.rabbitmq.com/download.html">documentation de l'outil</a> (peut nécessiter de compiler Erlang).
+</p>
+
 
 							<h4>Générateur de logs</h4>	
 							<div class="alert alert-danger" role="alert">
