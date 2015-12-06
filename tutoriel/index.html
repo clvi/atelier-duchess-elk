@@ -90,9 +90,8 @@ Contrôler la version de Java installée :
 java version "1.8.0_66"
 Java(TM) SE Runtime Environment (build 1.8.0_66-b18)
 Java HotSpot(TM) Client VM (build 25.66-b18, mixed mode, sharing)
-
 </pre>
-si la version est inférieure à 1.8, télécharger l'installeur pour Windows 64 bits à cette adresse : <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</a>. 
+Si la version est inférieure à 1.8, télécharger l'installeur pour Windows 64 bits à cette adresse : <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</a>. 
 </p>
 <p>
 Lancer l'installation en conservant les options par défaut.
@@ -102,18 +101,18 @@ Vérifier que l'installation s'est bien passée en reprenant la commande de vér
 </p>
 
 							<h4>LogStash</h4>
-<p>Nous utiliserons la dernière version de LogStash : 2.1.0. </p>
+<p>Nous utiliserons la version 2.1.0 de LogStash. </p>
 <p>Télécharger le ZIP ou le TAR.GZ de la version 2.1.0 à cette adresse : <a href="https://www.elastic.co/downloads/logstash">https://www.elastic.co/downloads/logstash</a>.</p>
 <p>Décompresser l'archive dans <code>$MY_DIR</code>. </p>
 <p>Tester que LogStash se lance bien avec la commande : 
 <pre>
-$ ${MY_DIR}/logstash-2.1.0/bin/logstash version
+$ ./logstash-2.1.0/bin/logstash version
 logstash 2.1.0
 </pre>
 </p>
 
 							<h4>ElasticSearch</h4>
-<p>Nous utiliserons la dernière version d'ElasticSearch : 2.1.0. </p>
+<p>Nous utiliserons la version 2.1.0 d'ElasticSearch. </p>
 <p>Télécharger le ZIP ou le TAR de la version 2.1.0 à cette adresse : <a href="https://www.elastic.co/downloads/elasticsearch">https://www.elastic.co/downloads/elasticsearch</a>.</p> 
 <p>Décompresser l'archive dans <code>$MY_DIR</code>.</p> 
 <p>Tester qu'ElasticSearch se lance bien avec la commande : 
@@ -143,7 +142,7 @@ Contrôler à l'URL <a href="http://localhost:9200/">http://localhost:9200/</a> 
 
 							<h4>Kibana</h4>
 <p>La version de Kibana compatible avec ElasticSearch 2.1.x est la version 4.3.0. </p>
-<p>Télécharger la version comaptible avec votre système à l'adresse: <a href="https://www.elastic.co/downloads/kibana">https://www.elastic.co/downloads/kibana</a>. </p>
+<p>Télécharger la version correspondant à votre système à l'adresse: <a href="https://www.elastic.co/downloads/kibana">https://www.elastic.co/downloads/kibana</a>. </p>
 <p>Décompresser l'archive dans <code>$MY_DIR</code>. </p>
 <p>Lancer Kibana avec la commande :
 <pre>
@@ -228,7 +227,7 @@ Status of node 'rabbit@claire-i5' ...
       </div>
 
 			<div>
-				<h2 id="logstash">Etape 1 : LogStash</h2>
+				<h2 id="logstash">Étape 1 : LogStash</h2>
 <p>
 Dans cette étape, nous allons lire un fichier de logs avec LogStash, découper ces logs pour leur ajouter de la sémantique, et les faire écrire dans la sortie standard. 
 </p>
@@ -275,7 +274,7 @@ Logstash shutdown completed
 </p>	
 
 <p>
-Nous avons donc lu un fichier avec LogStash et l'avons recopié sur la sortie standard. C'est un bon début, mais ce n'est pas suffisant. Nous allons maintenant modifier la configuration pour découper chaque ligne lue dans le fichier en un message JSON contenant des champs nommé. Cela permettra d'ajouter de la sémantique à chaque ligne, et ensuite de faire des recherches une fois dans ElasticSearch.
+Nous avons donc lu un fichier avec LogStash et l'avons recopié sur la sortie standard. C'est un bon début, mais ce n'est pas suffisant. Nous allons maintenant modifier la configuration pour découper chaque ligne lue dans le fichier en un message JSON contenant des champs nommés. Cela permettra d'ajouter de la sémantique à chaque ligne, et ensuite de faire des recherches une fois dans ElasticSearch.
 </p>
 
 				<div class="alert alert-info" role="alert">
@@ -294,7 +293,7 @@ input {
 		path => "$MY_DIR/logstash-tutorial-small.log"
 		start_position => beginning 
 		# on customise le sincedb_path et le nom du fichier
-		sincedb_path => "/var/log/logstash/sincedb_apache.log"
+		sincedb_path => "$MY_DIR/sincedb/sincedb_apache.log"
 	}
 }
 </pre>
@@ -416,7 +415,7 @@ La mise au point d'un pattern GROK "maison" (non embarqué par défaut), pour tr
 
 				<div class="alert alert-warning" role="alert">
 <p>
-L'extrait de configuration GROK mentionné au dessus contient la ligne suivante pour désigner le mois dans la date :
+L'extrait de configuration GROK mentionné au dessus contient la ligne suivante pour désigner le mois :
 <pre>
 MONTH \b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b
 </pre>
@@ -467,11 +466,14 @@ Si on compare les champs <code>@timestamp</code> et <code>timestamp</code> dans 
 
 Les deux valeurs sont bien identiques, on pourra donc une fois dans ElasticSearch faire une recherche sur le champ standard <code>@timestamp</code> et avoir des résultats pertinents...
 </p>
+<p>
+En cas de soucis, voici <a href="./files/logstash_p1.conf" >le fichier <code>logstash.conf</code></a> obtenu à la fin de cette partie.
+</p>
 
       </div>
 
 			<div>
-				<h2 id="es">Etape 2 : ElasticSearch</h2>
+				<h2 id="es">Étape 2 : ElasticSearch</h2>
 Dans cette étape, nous allons utiliser le résultat de l'étape précédente pour indexer les logs découpés dans ElasticSearch et les rechercher sommairement via l'API REST d'ElasticSearch. Nous apprendrons également comme configurer sommairement ElasticSearch et comment le monitorer avec quelques plugins courants.
 
 				<div class="alert alert-danger" role="alert">
@@ -560,12 +562,12 @@ Telle qu'elle, l'application n'est pas tolérante aux pannes : si ElasticSearch 
 Comme nous l'avons vu, il est très facile de démarrer plusieurs instances de LogStash. Ainsi, il serait très facile d'installer LogStash sur 2 ou plus de machines, avec un fichier de configuration identique leur faisant lire la même file RabbitMQ et déposer dans le même ElasticSearch, pour dupliquer cette partie de l'infrastructure.
 </p>
 <p>
-Réaliser la même chose au niveau d'ElasticSearch n'est guère plus complexe : il suffit de démarrer un second noeud avec le même nom de cluster que le premier et d'indiquer le premier noeud dans la liste des noeuds du cluster pour que le cluster se forme. En gardant la configuration par défaut qui crée 1 réplique de toutes les données et la répartition automatique des données entre les noeuds implémentée dans ElasticSearch, la haute disponibilité est à l'oeuvre...
+Réaliser la même chose au niveau d'ElasticSearch n'est guère plus complexe : il suffit de démarrer un second nœud avec le même nom de cluster que le premier et d'indiquer le premier nœud dans la liste des nœuds du cluster pour que le cluster se forme. En gardant la configuration par défaut qui crée 1 réplique de toutes les données et la répartition automatique des données entre les nœuds implémentée dans ElasticSearch, la haute disponibilité est à l'œuvre...
 </p>
 <p>
 Dans cette partie, vous pouvez donc :
 <ol>
-<li>Dupliquer le fichier de configuration <code>elasticsearch.yml</code>, et modifier les ports d'écoute pour pouvoir le lancer sur la même machine que le premier noeud.
+<li>Dupliquer le fichier de configuration <code>elasticsearch.yml</code>, et modifier les ports d'écoute pour pouvoir le lancer sur la même machine que le premier nœud.
 <div class="alert alert-danger" role="alert">
 					TODO
 				</div>
