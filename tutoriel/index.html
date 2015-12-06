@@ -474,12 +474,313 @@ En cas de soucis, voici <a href="./files/logstash_p1.conf" >le fichier <code>log
 
 			<div>
 				<h2 id="es">Étape 2 : ElasticSearch</h2>
-Dans cette étape, nous allons utiliser le résultat de l'étape précédente pour indexer les logs découpés dans ElasticSearch et les rechercher sommairement via l'API REST d'ElasticSearch. Nous apprendrons également comme configurer sommairement ElasticSearch et comment le monitorer avec quelques plugins courants.
-
-				<div class="alert alert-danger" role="alert">
-					TODO
+<p>
+Dans cette étape, nous allons utiliser le résultat de l'étape précédente pour indexer les logs découpés dans ElasticSearch et les rechercher sommairement via l'API REST d'ElasticSearch. Nous apprendrons également comme configurer sommairement ElasticSearch et comment le monitorer via un plugin.
+</p>
+<p>
+Nous allons commencer par envoyer les logs à ElasticSearch depuis LogStash.
+</p>
+<p>
+Pour cela, ouvrir le fichier <code>logstash.conf</code> et modifier le bloc <code>output</code> :
+<pre>
+output {
+    elasticsearch {}
+}
+</pre>
+Comme nous faisons fonctionner LogStash et ElasticSearch sur la même machine et sans sécurité, les paramètres par défaut conviennent. 
+</p>
+<p>
+Supprimer le fichier <code>.sincedb_*</code> et redémarrer Logstash. Une fois la trace <code>Logstash startup completed</code> apparue, on observe du côté d'Elasticsearch 2 nouvelles traces :
+<pre>
+[2015-12-06 18:25:04,575][INFO ][cluster.metadata         ] [Shirow Ishihara] [logstash-2015.01.04] creating index, cause [auto(bulk api)], templates [logstash], shards [5]/[1], mappings [_default_, logs]
+[2015-12-06 18:25:05,342][INFO ][cluster.metadata         ] [Shirow Ishihara] [logstash-2015.01.04] update_mapping [logs]
+</pre>
+Ces traces indiquent que des logs ont été envoyées à ElasticSearch par Logstash, et qu'ElasticSearch a créé un nouvel index nommé <code>logstash-2015.01.04</code> pour contenir ces données.
+</p>
+<p>
+Nous allons utiliser l'API REST d'ElasticSearch pour consulter les données de ce nouvel index (donc, une seule ligne, ou un seul <em>document</em> selon la terminologie d'ElasticSearch, correspondant à notre log Apache).
+</p>
+<p>
+Entrez dans votre navigateur l'URL suivante : <a href="http://localhost:9200/logstash-2015.01.04/_search" >http://localhost:9200/logstash-2015.01.04/_search</a>. Le résultat devrait être (une fois mis en forme) :
+<pre>
+{
+"took":226,
+"timed_out":false,
+"_shards":{"total":5,"successful":5,"failed":0},
+"hits":{
+  "total":1,
+  "max_score":1.0,
+  "hits":[
+    {
+      "_index":"logstash-2015.01.04",
+      "_type":"logs",
+      "_id":"AVF4U1CkEZ3y1kCGmOik",
+      "_score":1.0,
+      "_source":{
+        "message":"83.149.9.216 - - [04/Jan/2015:05:13:42 +0000] \"GET /presentations/logstash-monitorama-2013/images/kibana-search.png HTTP/1.1\" 200 203023 \"http://semicomplete.com/presentations/logstash-monitorama-2013/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\"",
+        "@version":"1",
+        "@timestamp":"2015-01-04T05:13:42.000Z",
+        "host":"claire-i5",
+        "path":"/home/claire/Documents/atelier_es_mydir/logstash-tutorial-small.log",
+        "clientip":"83.149.9.216",
+        "ident":"-",
+        "auth":"-",
+        "timestamp":"04/Jan/2015:05:13:42 +0000",
+        "verb":"GET",
+        "request":"/presentations/logstash-monitorama-2013/images/kibana-search.png",
+        "httpversion":"1.1",
+        "response":"200",
+        "bytes":"203023",
+        "referrer":"\"http://semicomplete.com/presentations/logstash-monitorama-2013/\"",
+        "agent":"\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\""
+      }
+    }
+  ]
+}
+}
+</pre>
+</p>
+<p>
+Nous allons détailler un peu ce résultat et en profiter pour expliquer quelques notions du fonctionnement interne d'ElasticSearch.
+</p>
+<p>
+Le début indique que la requête a pris 226ms  et qu'elle n'a pas déclenché de timeout :
+<pre>
+"took":226,
+"timed_out":false,
+</pre>
+</p>
+<p>
+La suite indique que la requête a été faite sur 5 <em>shards</em> et qu'aucun d'eux n'a déclenché d'erreur.
+<pre>
+"_shards":{"total":5,"successful":5,"failed":0},
+</pre>
+Un <em>shard</em> est une portion d'index, qui contient des données. La répartition des données entre les différents index est décidée par l'utilisateur, qui indique dans sa requête le nom de l'index ciblé. LogStash a fait ce travail à notre place en indiquant à ElasticSearch le nom d'index commençant par <code>logstash-</code> et terminant par le jour du log à indexer. 
+</p>
+<p>
+Lorsqu'il reçoit des documents à indexer dans un index donné, ElasticSearch les dispatche de manière homogène entre différents <em>shards</em>. Par défaut, chaque index possède 5 <em>shards</em> mais il est possible de configurer cette valeur en fonction du nombre de nœuds dans le cluster ElasticSearch, de la volumétrie de données et des requêtes réalisées. Chaque <em>shard</em> porte donc une partie des données de l'index, 20% dans notre cas puisque l'index possède 5 <em>shards</em>. Ce sont ces <em>shards</em> qu'ElasticSearch va ensuite automatiquement répartir entre les nœuds du cluster, ainsi que leurs répliques (1 par défaut) pour assurer à la fois la scalabilité, les performances, et la tolérance aux pannes.
+</p>
+<p>
+Enfin, viennent les <em>hits</em>, donc les documents qui correspondaient à la recherche effectuée. Dans notre cas, nous n'avons précisé aucun critère donc la totalité des documents (1) a été retournée.
+</p>
+<p>
+On retrouve ainsi le nombre total de résultats (1), et le <code>max_score</code> qui indique à quel point le document considéré comme le plus pertinent par rapport à la recherche, est pertinent.
+<pre>
+"total":1,
+"max_score":1.0,
+</pre>
+Le fonctionnement du scoring est assez complexe, nous n'allons donc pas nous attarder dessus dans ce tutoriel. Il faut cependant savoir que c'est le critère de tri par défaut des résultats (du plus pertinent au moins pertinent). Cela étant assez peu intéressant pour consulter des logs (que nous préférons généralement triés par date, même quand nous cherchons une chaîne de caractères précise par exemple), nous préciserons donc souvent un autre critère de tri, notamment sur le champ <code>@timestamp</code> vu précédemment.
+</p>
+<p>
+Viennent ensuite les résultats eux-même. Dans notre exemple, nous retrouvons bien la ligne de log découpée en champs nommés vue à l'étape 1. Un <em>hit</em> contient, en plus du contenu du document (la ligne de log) stocké dans le champ <code>_source</code>, d'autres champs correspondant à des metadata ajoutées ou calculées par ElasticSearch. 
+<pre>
+"_index":"logstash-2015.01.04",
+"_type":"logs",
+"_id":"AVF4U1CkEZ3y1kCGmOik",
+"_score":1.0,
+</pre>
+On y retrouve le nom de l'index dans le champ <code>_index</code>, et le score par rapport à la recherche dans <code>_score</code>. Le champ <code>_id</code> contient quant à lui l'identifiant unique du document dans l'index, ce qui permet d'y accéder ensuite directement. Il peut être imposé par le client lors de l'envoi des documents à indexer, ou plus fréquemment il n'est pas précisé et comme ici ElasticSearch le génère.
+</p>
+<p>
+Enfin, on trouve le champ <code>_type</code>, positionné à la valeur <code>logs</code>. Ici encore, LogStash nous a mâché le travail et à indiqué à ElasticSearch que le document qu'il lui envoyait était de type <code>logs</code>. Cela a une grande importance, car c'est sur ce type qu'ElasticSearch va se baser pour savoir quels champs il peut s'attendre à trouver dans le document, et comment il va devoir les indexer : chaînes de caractères ? entiers ? date ? indexés en texte brut ou découpés selon des caractères de séparation ? etc.
+</p>
+<p>
+Si on relit de nouveau les traces produites par ElasticSearch lors de la réception du log, on voit que la seconde mentionne ce type <code>logs</code> :
+<pre>
+[2015-12-06 18:25:05,342][INFO ][cluster.metadata         ] [Shirow Ishihara] [logstash-2015.01.04] update_mapping [logs]
+</pre>
+En effet, comme nous n'avons pas indiqué à ElasticSearch comment interpréter le type <code>logs</code>, il a dû deviner, et a stocké le résultat de sa tentative dans un <em>mapping</em>.
+</p>
+<p>
+Comme cela a une grande importance sur la qualité et l'efficacité des recherches faites sur les différents champs (on peut indiquer une plage de dates en critère de recherche, cela ne fonctionnera pas si le champ est une simple chaîne de caractères), il est intéressant de voir comment ElasticSearch a deviné. Pour cela, entrer l'URL suivante dans votre navigateur : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/">http://localhost:9200/logstash-2015.01.04/_mapping/logs/</a>.
+</p>
+<p>
+Le résultat est assez verbeux, nous allons donc nous intéresser à certains champs, et notamment ceux qui ne sont pas de simples chaînes de caractères.
+</p>
+<p>
+Tout d'abord, le champ <code>@timestamp</code> : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/@timestamp">http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/@timestamp</a>
+<pre>
+{
+  "logstash-2015.01.04":{
+    "mappings":{
+      "logs":{
+        "@timestamp":{
+          "full_name":"@timestamp",
+          "mapping":{
+            "@timestamp":{
+              "type":"date",
+              "format":"strict_date_optional_time||epoch_millis"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</pre>
+Ce champ est standard dans LogStash, ElasticSearch l'a reconnu et lui a donc appliqué de lui même le type <code>date</code> avec au choix les 2 formats <code>strict_date_optional_time</code> et <code>epoch_millis</code> (les formats par défaut sont <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats">ici</a>, sinon il est possible d'indiquer son propre format selon la syntaxe de la librairie JodaTime).
+</p>
+<p>
+Prenons maintenant le champ <code>bytes</code> : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes">http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes</a>
+<pre>
+{
+  "logstash-2015.01.04":{
+    "mappings":{
+      "logs":{
+        "bytes":{
+          "full_name":"bytes",
+          "mapping":{
+            "bytes":{
+              "type":"string",
+              "norms":{
+                "enabled":false
+              },
+              "fielddata":{
+                "format":"disabled"
+              },
+              "fields":{
+                "raw":{
+                  "type":"string",
+                  "index":"not_analyzed",
+                  "ignore_above":256
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</pre>
+Il a été détecté comme une chaîne de caractères (<code>"type":"string"</code>), alors que nous savons que c'est un nombre entier. En l'état, nous ne pourrons pas faire de recherche sur les documents où le champ <code>bytes</code> est supérieur à 200 000 par exemple.
+</p>
+<p>
+Si on observe le mapping complet, on trouve d'autres champs dont Elasticsearch a mal deviné le type :
+<ul>
+<li><code>timestamp</code> (<code>string</code> au lieu d'une date à un format particulier)</li>
+<li><code>response</code> (<code>string</code> au lieu d'un entier)</li>
+</ul>
+</p>
+<p>
+Il n'est pas possible de corriger un mapping Elasticsearch sans réindexer les données. Comme dans notre cas nous n'avons qu'une seule donnée, nous allons supprimer l'index, et le document et le mapping deviné avec lui, pour pouvoir le reconfigurer proprement et soumettre de nouveau notre ligne de log pour indexation.
+</p>
+<p>
+Deux solutions existent pour supprimer un index. La première est la ligne de commande si on dispose du programme cURL installé :
+<pre>
+$ curl -XDELETE "http://localhost:9200/logstash-2015.01.04/"
+{"acknowledged":true}
+</pre>
+La seconde est l'installation d'un plugin de monitoring standard d'ElasticSearch, très utile pour consulter rapidement la santé de son cluster, le nombre et le contenu des index ainsi que tout le paramétrage du cluster ou des noeuds : <strong>Head</strong>.
+</p>
+<p>
+Head est un plugin communautaire hébergé sur <a href="https://mobz.github.io/elasticsearch-head/">GitHub</a> mais reconnu par ElasticSearch. L'installation est très simple depuis Internet :
+<pre>
+$ ./elasticsearch-2.1.0/bin/plugin  install mobz/elasticsearch-head
+-> Installing mobz/elasticsearch-head...
+Trying https://github.com/mobz/elasticsearch-head/archive/master.zip ...
+Downloading ..............................................DONE
+Verifying https://github.com/mobz/elasticsearch-head/archive/master.zip checksums if available ...
+NOTE: Unable to verify checksum for downloaded plugin (unable to find .sha1 or .md5 file to verify)
+Installed head into /home/claire/Documents/atelier_es_mydir/elasticsearch-2.1.0/plugins/head
+</pre>
+Une fois installé, accédez à l'URL suivante : <a href="http://localhost:9200/_plugin/head/">http://localhost:9200/_plugin/head/</a>
+<img src="images/es_head.png" />
+</p>
+<p>
+On trouve sur le premier onglet les index (<code>.kibana</code>, qui n'existe que si vous avez déjà lancé Kibana, et notre index <code>logstash-2015.01.04</code>) et la répartition des shards (les boites vertes numérotées) entre les noeuds du cluster (un seul pour nous, nommé <code>Shirow Ishihara</code> sur la capture). Comme par défaut ElasticSearch essaye de répliquer les données une fois sur un second nœud qui n'existe pas dans notre configuration, ils apparaissent <code>Unassigned</code>, non assignés. Cela explique la santé du cluster qui vaut <code>yellow</code> (une partie des répliques est non assignée). Elle serait <code>green</code> si toutes les répliques étaient assignées à des nœuds, et <code>red</code> si certaines données primaires étaient en cours de récupération (après un redémarrage de notre unique nœud par exemple).
+</p>
+<p>
+Le second onglet "Index" permet de lister les index.
+</p>
+<p>
+L'onglet "Navigateur" permet de consulter les données en choisissant des critères de filtres dans la colonne gauche.
+</p>
+<p>
+Les onglets "Recherche structurée" et "Autres requêtes" permettent de faire des requêtes complexes sur le cluster.
+</p>
+<p>
+Maintenant que nous avons installé Head, nous allons pouvoir nous en servir pour supprimer notre index mal configuré. Pour cela, revenir sur l'onglet "Aperçu". Cliquer sur le bouton "Action" sous le nom de l'index <code>logstash-2015.01.04</code> et choisir "Effacer...".
+</p>
+<p>
+<img src="images/es_effacer.png" />
+</p>
+<p>
+Entrer le texte "SUPPRIMER" dans la pop-up puis cliquer sur OK pour confirmer. Une nouvelle pop-up devrait indiquer <code>{"acknowledged":true}</code> quasiment instantanément, et l'index disparaître de l'écran après avoir cliqué sur OK.
+</p>
+<p>
+Nous pouvons maintenant indiquer à ElasticSearch comment interpréter les futures données de type <code>logs</code> que nous allons lui envoyer. Pour cela, nous allons rédiger un <em>template</em>. C'est un élément de configuration qui contient, pour un type donné, quels champs il contient et comment les interpréter. Ce <em>template</em> sera automatiquement transformé en <em>mapping</em> lors de la création d'un index dont le nom correspondra au champ d'action du <em>template</em>.
+</p>
+<p>
+Pour faire cela, le programme cURL est le plus pratique. Taper la commande suivante (attention aux sauts de lignes intempestifs !) :
+<pre>
+curl -XPUT "http://localhost:9200/_template/logs_template" -d '
+{
+  "template" : "logstash-*",
+  "mappings" : {
+    "logs" : {
+      "properties" : {
+        "bytes" : { "type" : "integer" },
+        "response" : { "type" : "integer" },
+        "timestamp" : { "type" : "date", "format" : "dd/MMM/YYYY:HH:mm:ss Z" }
+      }
+    }
+  }
+}'
+{"acknowledged":true}
+</pre>
+</p>
+				<div class="alert alert-info" role="alert">
+					Pour simplifier, nous ne définissons que les 3 champs qui posaient problème. Pour fiabiliser au maximum l'indexation, il est préférable dans un cas réel de définir l'ensemble des champs pour éviter qu'une valeur "bizarre" ne vienne perturber la configuration automatique des types et empêcher de futures indexations.
 				</div>
-				
+<p>
+Ensuite, supprimer le fichier <code>.sincedb_*</code> et redémarrer LogStash. Rafraîchir la page de Head jusqu'à voir apparaître l'index avec le même nom que précédemment.
+</p>
+<p>
+Vérifier le type du champ <code>bytes</code> avec l'URL suivante : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes">http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes</a>. On voit qu'il est bien considéré comme un entier, nous pourrons donc faire des requêtes avec des comparaisons de nombres dessus.
+<pre>
+{
+  "logstash-2015.01.04":{
+    "mappings":{
+      "logs":{
+        "bytes":{
+          "full_name":"bytes",
+          "mapping":{
+            "bytes":{"type":"integer"}
+          }
+        }
+      }
+    }
+  }
+}
+</pre>
+</p>
+<p>
+Nous avons vu comment paramétrer l'indexation d'ElasticSearch, et comment gérer son contenu via Head. Pour préparer l'étape suivante avec Kibana, nous allons maintenant lui faire indexer une volumétrie plus importante de données.
+</p>
+<p>
+Pour cela, enregistrer le <a href="./files/logstash-tutorial-dataset.log">fichier suivant</a> sur votre disque.
+</p>
+<p>
+Ouvrir le fichier <code>logstash.conf</code> et modifier le début pour lire le nouveau fichier au lieu de l'ancien.
+<pre>
+input {
+  # On définit ici les sources de données à traiter
+  file {
+    path => "$MY_DIR/logstash-tutorial-dataset.log"
+    start_position => beginning
+    # on customise le sincedb_path et le nom du fichier
+    sincedb_path => "$MY_DIR/sincedb/sincedb_apache.log"
+  }
+}
+</pre>
+</p>
+<p>
+Supprimer l'index dans ElasticSearch via Head ou cURL, supprimer le fichier <code>.sincedb_*</code> et redémarrer LogStash. Rafraîchir la page de Head jusqu'à voir réapparaître l'index. Il doit contenir maintenant 100 documents et non plus 1 seul.
+</p>
+<p>
+<img src="images/es_100.png" />
+</p>
       </div>
 
 			<div>
