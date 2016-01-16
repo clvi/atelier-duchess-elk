@@ -30,7 +30,7 @@
 						<li>L'installation locale de LogStash, ElasticSearch et Kibana</li>
 						<li>Le traitement de fichiers de logs par LogStash</li>
 						<li>L'indexation dans ElasticSearch</li>
-						<li>Le requêtage via Kibana</li>
+						<li>L'exploitation des données via Kibana</li>
 						<li>Et pour aller plus loin : l'utilisation d'un broker de messages et d'agents distants, la mise en cluster d'ElasticSearch, des éléments sur le tuning de performances d'ElasticSearch, ...</li>
 					</ul>
 				</p>
@@ -40,15 +40,15 @@
 				<div>
 					<ul>
 						<li><a href="#install">Pré-requis et installation</a></li>
-						<li><a href="#logstash">Etape 1 : LogStash</a></li>
-						<li><a href="#es">Etape 2 : ElasticSearch</a></li>
-						<li><a href="#kibana">Etape 3 : Kibana</a></li>
+						<li><a href="#logstash">Étape 1 : LogStash</a></li>
+						<li><a href="#es">Étape 2 : ElasticSearch</a></li>
+						<li><a href="#kibana">Étape 3 : Kibana</a></li>
 						<li><a href="#further">Pour aller plus loin...</a>
 							<ul>
 								<li><a href="#rspec">Tests unitaires de LogStash</a>
 								<li><a href="#broker">Utilisation d'un agent et d'un broker de messages</a>
 								<li><a href="#cluster">Clustering</a>
-								<li><a href="#perf">Eléments de performances</a>
+								<li><a href="#perf">Éléments de performances</a>
 							</ul>
 						</li>
 					</ul>
@@ -119,7 +119,7 @@ logstash 2.1.0
 <pre>
 $ ./elasticsearch-2.1.0/bin/elasticsearch
 </pre>
-Une fois la trace suivante reçue dans la console (<code>Kirigi</code> étant le nom du noeud, il change à chaque démarrage) : 
+Une fois la trace suivante reçue dans la console (<code>Kirigi</code> étant le nom du nœud, il change à chaque démarrage) : 
 <pre>
 [2015-11-28 14:03:28,178][INFO ][node                     ] [Kirigi] started
 </pre>
@@ -560,7 +560,7 @@ Entrez dans votre navigateur l'URL suivante : <a href="http://localhost:9200/log
 Nous allons détailler un peu ce résultat et en profiter pour expliquer quelques notions du fonctionnement interne d'ElasticSearch.
 </p>
 <p>
-Le début indique que la requête a pris 226ms  et qu'elle n'a pas déclenché de timeout :
+Le début indique que la requête a pris 226ms et qu'elle n'a pas déclenché de timeout :
 <pre>
 "took":226,
 "timed_out":false,
@@ -679,7 +679,7 @@ Si on observe le mapping complet, on trouve d'autres champs dont Elasticsearch a
 </ul>
 </p>
 <p>
-Il n'est pas possible de corriger un mapping Elasticsearch sans réindexer les données. Comme dans notre cas nous n'avons qu'une seule donnée, nous allons supprimer l'index, et le document et le mapping deviné avec lui, pour pouvoir le reconfigurer proprement et soumettre de nouveau notre ligne de log pour indexation.
+Il n'est pas possible de corriger un mapping Elasticsearch sans ré-indexer les données. Comme dans notre cas nous n'avons qu'une seule donnée, nous allons supprimer l'index, et le document et le mapping deviné avec lui, pour pouvoir le reconfigurer proprement et soumettre de nouveau notre ligne de log pour indexation.
 </p>
 <p>
 Deux solutions existent pour supprimer un index. La première est la ligne de commande si on dispose du programme cURL installé :
@@ -687,7 +687,7 @@ Deux solutions existent pour supprimer un index. La première est la ligne de co
 $ curl -XDELETE "http://localhost:9200/logstash-2015.01.04/"
 {"acknowledged":true}
 </pre>
-La seconde est l'installation d'un plugin de monitoring standard d'ElasticSearch, très utile pour consulter rapidement la santé de son cluster, le nombre et le contenu des index ainsi que tout le paramétrage du cluster ou des noeuds : <strong>Head</strong>.
+La seconde est l'installation d'un plugin de monitoring standard d'ElasticSearch, très utile pour consulter rapidement la santé de son cluster, le nombre et le contenu des index ainsi que tout le paramétrage du cluster ou des nœuds : <strong>Head</strong>.
 </p>
 <p>
 Head est un plugin communautaire hébergé sur <a href="https://mobz.github.io/elasticsearch-head/">GitHub</a> mais reconnu par ElasticSearch. L'installation est très simple depuis Internet :
@@ -704,7 +704,7 @@ Une fois installé, accédez à l'URL suivante : <a href="http://localhost:9200/
 <img src="images/es_head.png" />
 </p>
 <p>
-On trouve sur le premier onglet les index (<code>.kibana</code>, qui n'existe que si vous avez déjà lancé Kibana, et notre index <code>logstash-2015.01.04</code>) et la répartition des shards (les boites vertes numérotées) entre les noeuds du cluster (un seul pour nous, nommé <code>Shirow Ishihara</code> sur la capture). Comme par défaut ElasticSearch essaye de répliquer les données une fois sur un second nœud qui n'existe pas dans notre configuration, ils apparaissent <code>Unassigned</code>, non assignés. Cela explique la santé du cluster qui vaut <code>yellow</code> (une partie des répliques est non assignée). Elle serait <code>green</code> si toutes les répliques étaient assignées à des nœuds, et <code>red</code> si certaines données primaires étaient en cours de récupération (après un redémarrage de notre unique nœud par exemple).
+On trouve sur le premier onglet les index (<code>.kibana</code>, qui n'existe que si vous avez déjà lancé Kibana, et notre index <code>logstash-2015.01.04</code>) et la répartition des shards (les boites vertes numérotées) entre les nœuds du cluster (un seul pour nous, nommé <code>Shirow Ishihara</code> sur la capture). Comme par défaut ElasticSearch essaye de répliquer les données une fois sur un second nœud qui n'existe pas dans notre configuration, ils apparaissent <code>Unassigned</code>, non assignés. Cela explique la santé du cluster qui vaut <code>yellow</code> (une partie des répliques est non assignée). Elle serait <code>green</code> si toutes les répliques étaient assignées à des nœuds, et <code>red</code> si certaines données primaires étaient en cours de récupération (après un redémarrage de notre unique nœud par exemple).
 </p>
 <p>
 Le second onglet "Index" permet de lister les index.
@@ -800,19 +800,152 @@ Supprimer l'index dans ElasticSearch via Head ou cURL, supprimer le fichier <cod
       </div>
 
 			<div>
-				<h2 id="kibana">Etape 3 : Kibana</h2>
+				<h2 id="kibana">Étape 3 : Kibana</h2>
+<p>
 Dans cette étape, nous allons voir comment Kibana permet de rechercher facilement dans ElasticSearch, et nous créerons un dashboard.
+</p>
+<p>
+Si Kibana est arrêté, lancez le avec la commande :
+<pre>
+$ ./kibana-4.3.0-linux-x64/bin/kibana
+</pre>
+Une fois la trace suivante obtenue dans la console :
+<pre>
+  log   [14:11:46.405] [info][listening] Server running at http://0.0.0.0:5601
+</pre>
 
-				<div class="alert alert-danger" role="alert">
-					TODO
-				</div>
-
-				<div class="alert alert-success" role="alert">Vous voilà arrivés à la fin du tutoriel. Vous pouvez continuer à lire pour aller plus loin...</div>
+Vérifier que Kibana répond à l'URL <a href="http://localhost:5601/">http://localhost:5601/</a>.
+</p>
+<p>
+Au premier lancement de Kibana, il nous demande quelques éléments de configuration de manière à savoir quelles données contenues dans ElasticSearch il va devoir traiter.
+</p>
+				<div class="alert alert-warning" role="alert">Attention si votre cluster ElasticSearch contient un grand nombre de templates utilisés dans tous vos index (plus de 50 templates et plus de 40 index par exemple) et que sur vos nœuds la Heap disponible pour ElasticSearch est plutôt faible : l'affichage de cet écran déclenche un parsing dans Elasticsearch de tous les mappings de tous les index. Cette requête peut utiliser jusqu'à 2Go de mémoire dans ElasticSearch avec ~2000 mappings, et provoquer la mort du cluster si la mémoire disponible est insuffisante ! Cette anomalie est en cours de correction côté ElasticSearch comme côté Kibana...</div>
       </div>
+<p>
+Nous souhaitons traiter des données basées sur le temps (<em>time-based events</em>), situés dans des index (un seul index en fait) dont le nom commence par <code>logstash-*</code> et dont le champ normalisé contenant le timestamp est <code>@timestamp</code> (rappelez vous précédemment, nous avions configuré tout le nécessaire dans Logstash pour que ce champ soit correctement positionné).
+</p>
+<p>
+L'écran de configuration doit donc être rempli de la manière suivante :
+<img src="./images/kibana_settings.png" />
+Cliquez ensuite sur <code>Create</code>.
+</p>
+<p>
+Un second écran nous affiche la configuration dans ElasticSearch de tous les champs connus dans les index correspondant au pattern <code>logstash-*</code> configuré précédemment. Il est possible de changer l'affichage des champs dans les dashboards pour une meilleure lisibilité en cliquant sur le petit icône en forme de stylo en face de chaque ligne. Nous allons pour notre part garder la configuration par défaut des champs.
+</p>
+<p>
+Outre la configuration des index à scruter que nous avons déjà ajustée, Kibana offre de nombreuses options de configuration via les écrans de Settings. L'avertissement sur la page Advanced est clair : <em>Caution: You can break stuff here</em>. Nous allons donc conserver les paramètres par défaut.
+</p>
+<p>
+Nous pouvons maintenant cliquer sur le menu <code>Discover</code> pour commencer à parcourir nos données. Pour l'instant, il ne trouve aucun résultat car par défaut il cherche des données datées des dernières 15 minutes et nos données de test datent du 04 janvier 2015.
+</p>
+<p>
+Pour changer cela et voir nos données, cliquer sur l'icône en forme de pendule en haut à droite de l'écran, sur le menu <code>Absolute</code> en choisir en date de début <code>2015-01-04 06:00:00.000</code> et en date de fin <code>2015-01-04 07:00:00.000</code>.
+</p>
+<p>
+<img src="./images/kibana_time_picker.png" />
+</p>
+<p>
+Cliquer sur <code>Go</code>.
+</p>
+<p>
+Cette fois, nous avons enfin des données ! Kibana nous affiche par défaut, la répartition des valeurs de <code>@timestamp</code> par minute sur la plage de dates sélectionnée. Cela peut déjà être très utile pour monitorer l'activité d'un site Web, puisque nos données de test sont des logs Apache.
+</p>
+<p>
+La barre de recherche en haut de l'écran contient par défaut le texte <code>*</code>, qui signifie "tous les documents".
+</p>
+<p>
+Pour affiner cette recherche, il est possible de rechercher un mot ou un ensemble de mots. Par exemple, entrez <code>*.html</code> et validez pour ne voir que les logs faisant référence à l'accès à des ressources HTML.
+</p>
+<p>
+Vous pouvez tester d'autres recherches, sur les codes retour ou le contenu des URL par exemple.
+</p>
+<p>
+Nous voulons maintenant rechercher tous les logs venant d'un client dont l'IP commence par <code>86.1</code>. Entrez donc <code>86.1</code> dans le champ de recherche et validez : Aucun résultat ?! 
+</p>
+<p>
+Essayons alors de préciser le champ sur lequel nous voulons rechercher. Il s'agit du champ <code>clientip</code>. Entrez donc <code>clientip:86.1</code> et validez... Pas mieux :(
+</p>
+<p>
+C'est en fait ici que les paramètres d'indexation définis dans le template Elasticsearch à l'étape précédente entrent en jeu. Nous n'avons pas configuré explicitement ce champ, ElasticSearch a donc fait des déductions pour déterminer son format et la manière de l'indexer. Si nous demandons cette configuration à ElasticSearch via l'URL <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/clientip" >http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/clientip</a> nous avons le résultat suivant :
+<pre>
+{
+  "logstash-2015.01.04": {
+    "mappings":{
+      "logs":{
+        "clientip":{
+          "full_name":"clientip",
+          "mapping":{
+            "clientip":{
+              "type":"string",
+              "norms":{
+                "enabled":false
+              },
+              "fielddata":{
+                "format":"disabled"
+              },
+              "fields":{
+                "raw":{
+                  "type":"string",
+                  "index":"not_analyzed",
+                  "ignore_above":256
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</pre>
+Les parties qui nous intéressent sont : <code>"type":"string"</code> et <code>"index":"not_analyzed"</code>. Le champ est une chaîne de caractères et n'est pas analysé lors de l'indexation. Cela signifie qu'ElasticSearch va indexer la valeur exacte du champ, et lors de la recherche, si on ne lui précise pas que l'on recherche une partie seulement de cette valeur, il va chercher la valeur exacte. Ce qui explique que nous n'ayons aucun résultat avec notre recherche <code>clientip:86.1</code>.
+</p>
+<p>
+Nous allons donc indiquer à ElasticSearch que la chaîne entrée doit correspondre au début de la valeur du champ, mais que le champ peut contenir d'autres caractères à la suite. Pour cela, nous ajoute une étoile à la fin : <code>clientip:86.1*</code>. Nous obtenons maintenant bien 3 résultats, correspondant à 3 requêtes faites depuis l'IP 86.1.76.62.
+</p>
+<p>
+Dans la colonne à gauche de l'écran, Kibana affiche tous les champs disponible dans les données retournées par la recherche, ainsi qu'une répartition des valeurs de chaque champ. Ainsi, si on clique sur le champ <code>response</code>, on voit que 98% des requêtes ont retourné un code 200, 1% un code 404 et 1% un code 304...
+</p>
+<img src="./images/kibana_fields_facets.png" />
+<p>
+L'affichage du tableau des résultats est pour l'instant un peu brut : il affiche uniquement le timestamp et le contenu brut du document tel que stocké dans ElasticSearch. Ce n'est pas très lisible, nous allons donc configurer Kibana pour afficher les informations les plus intéressantes.
+</p>
+<p>
+Pour cela, dans la colonne à gauche de l'écran pointer la souris sans cliquer sur le champ <code>response</code> et cliquer sur le petit bouton <code>add</code> qui s'affiche. Répéter l'opération avec les champs <code>clientip</code> et <code>request</code>. Le tableau est déjà bien plus lisible !
+</p>
+<p>
+A vous maintenant de sélectionner d'autres champs, d'en supprimer, de changer l'ordre des colonnes dans le tableau puis de trier le tableau selon l'une ou l'autre des colonnes. Essayez aussi de cliquer sur certaines zones du graphique pour voir leur effet...
+</p>
+<img src="./images/kibana_discover_final.png" />
+<p>
+Passons maintenant à l'onglet <code>Visualize</code>. Cet onglet permet de créer des graphiques à partir des données retournées par la recherche. Par exemple, nous pouvons reproduire le graphique du nombre de documents par minute vu sur la page précédente.
+</p>
+<p>
+Pour cela, configurer les options de graphique dans la colonne de gauche comme sur la capture d'écran ci-dessous et cliquer sur la flèche verte en haut pour afficher le graphique :
+</p>
+<img src="./images/kibana_visualize.png" />
+<p>
+De nombreuses autres visualisations sont disponible, outre l'affichage en histogramme que nous avons vu. Pour les découvrir, cliquer sur l'icône <img src="./images/kibana_new_viz.png" /> à côté de la barre de recherche. Les autres icônes permettent également de sauvegarder une visualisation, d'en charger une sauvegardée précédemment et de les partager.
+</p>
+<p>
+N'oubliez pas de sauvegarder 2 ou 3 visualisations pour pouvoir les utiliser dans la suite du tutoriel...
+</p>
+<p>
+Enfin, l'onglet <code>Dashboard</code> permet de configurer des tableaux de bords et de les sauvegarder.
+</p>
+<p>
+Créez un nouveau Dashboard comme indiqué en choisissant différentes recherches et visualisations enregistrées précédemment, et observez comme il évolue en fonction des recherches que vous faites. 
+</p>
+				<div class="alert alert-warning" role="alert">
+<p>Les visualisations, et a fortiori les dashboards, utilisent une fonctionnalité d'ElasticSearch nommé Agrégations. Cela permet de réaliser en une seule requête, et en profitant des performances et de la distribution des recherches, d'obtenir à la fois les documents correspondant à la recherche et un certain nombre de valeurs calculées à partir du contenu de ces documents : nombre d'occurrence de chaque valeur différente, répartition des valeurs dans le temps, etc.
+</p>
+<p>
+Cette fonctionnalité est très efficace et très pratique dans de nombreux cas, mais elle implique par contre une charge CPU importante sur le cluster ainsi que la mise en mémoire de nombreuses données. Si ce second point a été largement amélioré dans la version 2.*, la charge CPU reste importante et l'exécution simultanée par plusieurs utilisateurs d'agrégations complexes sur une grande volumétrie de documents (plusieurs centaines de milliers) peut ralentir globalement le cluster. 
+</p>
+</div>
+  
+				<div class="alert alert-success" role="alert">Vous voilà arrivés à la fin du tutoriel. Vous pouvez continuer à lire pour aller plus loin...</div>
 
-
-
-			<div>
 				<h2 id="further">Pour aller plus loin...</h2>
 Nous avons vu une infrastructure simple d'exploitation de logs. Elle souffre de nombreux points faibles : goulets d'étranglements de performances, vulnérabilité aux pannes, impact sur la charge des machines monitorées... Ces points peuvent être résolus par l'ajout de nouvelles briques et l'utilisation de clusters.
 
@@ -835,12 +968,12 @@ Pour fiabiliser cela, LogStash fourni un outil de tests unitaires, qui permet de
 </p>
 <p>Ces deux points peuvent être problématiques en production : La charge induite par LogStash peut perturber les applications supervisées, et toute indisponibilité d'ElasticSearch peut impacter le fonctionnement de l'agent.
 </p>
-<p>Pour résoudre cela, il est préférable d'installer LogStash sur les machines supervisées avec une configuration minimale, qui ne fait que lire les fichiers de logs, gérer le multiligne si nécessaire, et pousser les messages dans la suite de l'infrastructure, elle située sur des machines dédiées. Le traitement poussé des messages (Grok notamment) sera réalisé par une ou plusieurs autres instances de LogStash (voir le paragraphe "Clustering" plus loin) sur ces machines dédiées, et se chargera de pousser dans ElasticSearch.
+<p>Pour résoudre cela, il est préférable d'installer LogStash sur les machines supervisées avec une configuration minimale, qui ne fait que lire les fichiers de logs, gérer le multi-ligne si nécessaire, et pousser les messages dans la suite de l'infrastructure, elle située sur des machines dédiées. Le traitement poussé des messages (Grok notamment) sera réalisé par une ou plusieurs autres instances de LogStash (voir le paragraphe "Clustering" plus loin) sur ces machines dédiées, et se chargera de pousser dans ElasticSearch.
 </p>
 <p>
-Pour communiquer entre le LogStash "agent" installé sur les machines clientes et le LogStash "serveur" réalisant les traitements, il faut insérer entre eux deux une brique intermédiaire de "broker de messages". Plusieurs technologies peuvent être utilisées pour cela : Redis, RabbitMQ, Apache Kafka... Chacune de ces solutions ont leurs avantages et leurs inconvénients, à adapter à chaque cas d'usage. RabbitMQ offrant une bonne simplicité de mise en oeuvre et une interface d'administration pratiques dans le cadre de ce tutoriel, c'est ce que nous allons utiliser.
+Pour communiquer entre le LogStash "agent" installé sur les machines clientes et le LogStash "serveur" réalisant les traitements, il faut insérer entre eux deux une brique intermédiaire de "broker de messages". Plusieurs technologies peuvent être utilisées pour cela : Redis, RabbitMQ, Apache Kafka... Chacune de ces solutions ont leurs avantages et leurs inconvénients, à adapter à chaque cas d'usage. RabbitMQ offrant une bonne simplicité de mise en œuvre et une interface d'administration pratiques dans le cadre de ce tutoriel, c'est ce que nous allons utiliser.
 </p>
-<div class="alert alert-info" role="alert">Dans le cadre de ce tutoriel, il est possible de démarrer 2 fois LogStash sur votre PC en même temps, en précisant 2 fichiers de configuration différents pour la partie "agent" et la partie "serveur".</div>
+<div class="alert alert-info" role="alert">Dans le cadre de ce tutoriel, il est possible de démarrer 2 fois LogStash sur votre PC en même temps, en précisant 2 fichiers de configuration différents pour la partie "agent" et la partie "serveur".
 </div>
 <div class="alert alert-info" role="alert">Voici un extrait de la documentation de RabbitMQ sur les concepts spécifiques à RabbitMQ d'exchange, de queue et de routage dans RabbitMQ : 
 				<div class="alert alert-danger" role="alert">
@@ -873,7 +1006,7 @@ L'état de RabbitMQ et des queues qu'il contient peut être consulté sur l'IHM 
 
 				<h3 id="cluster">Clustering</h3>
 <p>
-Telle qu'elle, l'application n'est pas tolérante aux pannes : si ElasticSearch s'arrête, toute la chaine devient indisponible. Pour un usage en production, la haute disponibilité, la tolérance aux pannes et la montée en charge par du scaling horizontal peuvent être nécessaires.
+Telle qu'elle, l'application n'est pas tolérante aux pannes : si ElasticSearch s'arrête, toute la chaîne devient indisponible. Pour un usage en production, la haute disponibilité, la tolérance aux pannes et la montée en charge par du scaling horizontal peuvent être nécessaires.
 </p>
 <p>
 Comme nous l'avons vu, il est très facile de démarrer plusieurs instances de LogStash. Ainsi, il serait très facile d'installer LogStash sur 2 ou plus de machines, avec un fichier de configuration identique leur faisant lire la même file RabbitMQ et déposer dans le même ElasticSearch, pour dupliquer cette partie de l'infrastructure.
@@ -889,12 +1022,12 @@ Dans cette partie, vous pouvez donc :
 					TODO
 				</div>
 </li>
-<li>Configurer dans ce même fichier le premier noeud comme autre membre du cluster pour qu'ils se découvrent :
+<li>Configurer dans ce même fichier le premier nœud comme autre membre du cluster pour qu'ils se découvrent :
 				<div class="alert alert-danger" role="alert">
 					TODO
 				</div>
 </li>
-<li>Démarrer ce second noeud avec le nouveau fichier de configuration, et observer le résultat dans l'IHM Head d'ElasticSearch, sur le premier ou le second noeud (les mêmes données sont affichées) : <a href="https://localhost:9200/">https://localhost:9200/</a>
+<li>Démarrer ce second nœud avec le nouveau fichier de configuration, et observer le résultat dans l'IHM Head d'ElasticSearch, sur le premier ou le second nœud (les mêmes données sont affichées) : <a href="https://localhost:9200/">https://localhost:9200/</a>
 </li>
 </ol>
 </p>
@@ -902,7 +1035,7 @@ Dans cette partie, vous pouvez donc :
 <div class="alert alert-info" role="alert">Pour éviter les points uniques de défaillance (SPOF, Single Point of Failure) si à l'étape précédente on a mis en place RabbitMQ entre un LogStash agent et un serveur, il faudra également le mettre en cluster. Cela sort du cadre de ce Hands on, mais toute la documentation est disponible <a href="https://www.rabbitmq.com/clustering.html">sur le site du produit</a>.
 </div>
 
-				<h3 id="perf">Eléments de performances</h3>
+				<h3 id="perf">Éléments de performances</h3>
 				<div class="alert alert-danger" role="alert">
 					TODO
 				</div>
