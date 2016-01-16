@@ -935,6 +935,10 @@ Enfin, l'onglet <code>Dashboard</code> permet de configurer des tableaux de bord
 <p>
 Créez un nouveau Dashboard comme indiqué en choisissant différentes recherches et visualisations enregistrées précédemment, et observez comme il évolue en fonction des recherches que vous faites. 
 </p>
+<p>
+Un exemple d'un dashboard affichant la répartition des codes retour par valeur, la répartition des timestamp par minute et la répartition de la taille des réponses regroupées par 10k bytes :
+<img src="./images/kibana_dashboard.png" />
+</p>
 				<div class="alert alert-warning" role="alert">
 <p>Les visualisations, et a fortiori les dashboards, utilisent une fonctionnalité d'ElasticSearch nommé Agrégations. Cela permet de réaliser en une seule requête, et en profitant des performances et de la distribution des recherches, d'obtenir à la fois les documents correspondant à la recherche et un certain nombre de valeurs calculées à partir du contenu de ces documents : nombre d'occurrence de chaque valeur différente, répartition des valeurs dans le temps, etc.
 </p>
@@ -974,10 +978,7 @@ Pour communiquer entre le LogStash "agent" installé sur les machines clientes e
 </p>
 <div class="alert alert-info" role="alert">Dans le cadre de ce tutoriel, il est possible de démarrer 2 fois LogStash sur votre PC en même temps, en précisant 2 fichiers de configuration différents pour la partie "agent" et la partie "serveur".
 </div>
-<div class="alert alert-info" role="alert">Voici un extrait de la documentation de RabbitMQ sur les concepts spécifiques à RabbitMQ d'exchange, de queue et de routage dans RabbitMQ : 
-				<div class="alert alert-danger" role="alert">
-					TODO
-				</div>
+<div class="alert alert-info" role="alert">RabbitMQ utilise des concepts spécifiques nommés <em>exchange</em>, <em>queue</em> et <em>routage</em>. Il est conseillé de lire <a href="https://www.rabbitmq.com/tutorials/amqp-concepts.html" >la documentation (en anglais)</a> de l'outil avant de commencer cette étape du tutoriel pour comprendre les objets à configurer.
 </div>
 
 <p>
@@ -985,20 +986,34 @@ Dans cette partie, vous pouvez donc :
 <ol>
 <li>Démarrer un serveur RabbitMQ sur votre poste via la commande <code>$MY_DIR/rabbitmq_server-3.5.6/sbin/rabbitmq-server -detached</code> 
 </li>
-<li>Configurer un exchange, une queue et un routage dans RabbitMQ (voir plus haut l'explication de ces concepts) :
-				<div class="alert alert-danger" role="alert">
-					TODO
-				</div>
+<li>
+Activer l'interface graphique d'administration via la commande : 
+<pre>$MY_DIR/rabbitmq_server-3.5.6/sbin/rabbitmq-plugins enable rabbitmq_management
+The following plugins have been enabled:
+  mochiweb
+  webmachine
+  rabbitmq_web_dispatch
+  amqp_client
+  rabbitmq_management_agent
+  rabbitmq_management
+
+Applying plugin configuration to rabbit@claire-i5... started 6 plugins.
+</pre>
 </li>
-<li>Séparer le fichier <code>logstash.conf</code> en 2 parties. La première jouera le rôle de l'agent, et contiendra la lecture du fichier de logs et la dépose dans RabbitMQ. La seconde jouera le rôle du serveur, et lira les messages depuis RabbitMQ et les déposer dans ElasticSearch comme précédemment.
+<li>Accéder à l'interface à l'adresse <a href="http://localhost:15672/">http://localhost:15672/</a>, se connecter avec le nom d'utilisateur <code>guest</code> et le mot de passe <code>guest</code> et configurer un exchange, une queue et un routage dans RabbitMQ (voir plus haut l'explication de ces concepts) via les écrans dédiés à chaque concept.<br/>
+On nomme l'exchange <code>logs-exchange</code> et on défini son type à <code>direct</code>. On nomme la queue <code>logs-queue</code>, et la clé de routage sera fixée à <code>logstash</code>.<br/>
+<img src="./images/rabbitmq_exchange.png"/><br/>
+<img src="./images/rabbitmq_queue.png"/><br/>
+<img src="./images/rabbitmq_bind.png"/><br/>
+</li>
+<li>Séparer le fichier <code>logstash.conf</code> en 2 parties. La première jouera le rôle de l'agent, et contiendra la lecture du fichier de logs et la dépose dans RabbitMQ. La seconde jouera le rôle du serveur, et lira les messages depuis RabbitMQ et les déposer dans ElasticSearch comme précédemment.<br/>
+Le LogStash agent déposera les logs grâce au plugin <a href="https://www.elastic.co/guide/en/logstash/current/plugins-outputs-rabbitmq.html">Output RabbitMQ</a>, et le LogStash serveur les lira grâce au plugin <a href="https://www.elastic.co/guide/en/logstash/current/plugins-inputs-rabbitmq.html">Input RabbitMQ</a> (malgré leur nom de plugins, ils sont inclus dans LogStash, aucune installation supplémentaire n'est nécessaire).
 </li>
 <li>Démarrer les 2 instances de LogStash.
 </li>
 <li>Constater sur les logs arrivent dans ElasticSearch tout comme avant.
 </li>
 </ol>
-
-L'état de RabbitMQ et des queues qu'il contient peut être consulté sur l'IHM d'administration (notez le <code>s</code> à <code>https</code>) : <a href="https://localhost:15671/">https://localhost:15671/</a>
 
 </p>
 
