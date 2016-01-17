@@ -40,13 +40,30 @@
         </div>
         <h2 id="install">Pré-requis et installation</h2>
         <p>
-L'utilisation de la machine virtuelle demande au minimum un ordinateur avec un CPU puissant (type Intel Core i5), <strong>8Go de RAM</strong>, et un système d'exploitation (Windows, Mac ou Linux) <strong>64 bits</strong>. Si votre machine ne dispose pas de ce hardware minimum, merci d'installer avant le début de l'atelier les logiciels indiqués plus bas, dans la section <a href="#novm">Sans machine virtuelle</a> plus bas.
+L'utilisation de la machine virtuelle demande au minimum un ordinateur avec un CPU puissant (type Intel Core i5), <strong>8Go de RAM</strong>, et un système d'exploitation (Windows, Mac ou Linux) <strong>64 bits</strong>. Si votre machine ne dispose pas de ce hardware minimum, merci d'installer avant le début de l'atelier les logiciels indiqués plus bas, dans la section <a href="#novm">Sans machine virtuelle</a>.
         </p>
 
         <h3>Utilisation de la machine virtuelle fournie</h3>
-        <div class="alert alert-danger" role="alert">
-            TODO
-        </div>
+        <p>
+          <ul>
+            <li>Téléchargez VirtualBox pour votre système à cette adresse : <a href="https://www.virtualbox.org/wiki/Downloads">https://www.virtualbox.org/wiki/Downloads</a></li>
+            <li>
+              Exécutez l'installeur en conservant les paramètres par défaut.
+            </li>
+            <li>
+              Téléchargez la machine virtuelle de l'atelier <a href="https://drive.google.com/file/d/0B_b9KxBJMoOATENZMXU2LTF0N00/view?usp=sharing">à cette adresse</a> (fichier de 2 Go).
+            </li>
+            <li>
+              Le type de fichier devrait déjà être reconnu par le système comme associé à VirtualBox. Double-cliquez sur le fichier pour lancer la VM.
+            </li>
+            <li>
+              Le nom d'utilisateur est <code>elk</code>. Le mot de passe est <code>elk</code>.
+            </li>
+            <li>
+              Dans le lanceur à gauche de la fenêtre se trouvent un raccourci vers Firefox, avec en favori toutes les URL utiles de ce tutoriel, et un raccourci vers le terminal pour lancer toutes les commandes nécessaires. Tous les logiciels qui ne sont pas packagés ont été installés dans le dossier <code>/home/elk/atelier</code>.
+            </li>
+          </ul>
+        </p>
 
         <h3 id="novm">Sans machine virtuelle</h3>
         <p>
@@ -70,7 +87,7 @@ openjdk version "1.8.0_66-internal"
 </pre>
                   Si la version est inférieure à 1.8 ou si la commande est inconnue, installer l'openJDK 8 :
 <pre>
-$ sudo aptitude install openjdk-8-jdk
+$ sudo apt-get install openjdk-8-jdk
 </pre>
                 </p>
               </td>
@@ -167,7 +184,7 @@ $ ./elasticsearch-2.1.0/bin/elasticsearch
               <td>
                 <p>
 <pre>
-$ sudo aptitude install curl
+$ sudo apt-get install curl
 </pre>
                 </p>
               </td>
@@ -212,7 +229,7 @@ $ ./kibana-4.3.0-linux-x64/bin/kibana
               <td>
                 <p>Pour Ubuntu, installer le package fourni dans les dépots, il contient toutes les dépendances nécessaires :
 <pre>
-$ sudo aptitude install rabbitmq-server
+$ sudo apt-get install rabbitmq-server
 </pre>
                   L'installation du paquet déclenche le démarrage du serveur. Contrôler cela via la commande :
 <pre>
