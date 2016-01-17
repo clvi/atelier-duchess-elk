@@ -115,6 +115,16 @@ logstash 2.1.0
         <ul>
           <li>Télécharger le ZIP ou le TAR de la version 2.1.0 à cette adresse : <a href="https://www.elastic.co/downloads/elasticsearch">https://www.elastic.co/downloads/elasticsearch</a>.</li> 
           <li>Décompresser l'archive dans <code>$MY_DIR</code>.</li> 
+          <li>Installer le plugin Head. Head est un plugin communautaire hébergé sur <a href="https://mobz.github.io/elasticsearch-head/">GitHub</a> permettant de visualiser l'état et le contenu d'un cluster ElasticSearch. Lancer la commande :
+<pre>
+$ ./elasticsearch-2.1.0/bin/plugin install mobz/elasticsearch-head
+-> Installing mobz/elasticsearch-head...
+Trying https://github.com/mobz/elasticsearch-head/archive/master.zip ...
+Downloading ..............................................DONE
+Verifying https://github.com/mobz/elasticsearch-head/archive/master.zip checksums if available ...
+NOTE: Unable to verify checksum for downloaded plugin (unable to find .sha1 or .md5 file to verify)
+Installed head into /$MY_DIR/elasticsearch-2.1.0/plugins/head
+</pre>
           <li>Démarrer ElasticSearch avec la commande : 
 <pre>
 $ ./elasticsearch-2.1.0/bin/elasticsearch
@@ -230,15 +240,21 @@ Status of node 'rabbit@claire-i5' ...
           </table>
         </div>
 
+        <div class="alert alert-info" role="alert">
+          Dans la suite du tutoriel, les actions à faire sont indiquées par l'icone : <span class="glyphicon glyphicon-hand-right" />
+        </div>
+
         <h2 id="logstash">Étape 1 : LogStash</h2>
         <p>
         Dans cette étape, nous allons lire un fichier de logs avec LogStash, découper ces logs pour leur ajouter de la sémantique, et les faire écrire dans la sortie standard. 
         </p>
         <p>
-        Pour commencer, nous allons avoir besoin de logs à lire. Pour cela, enregistrer dans <code>$MY_DIR</code> <a href="./files/logstash-tutorial-small.log">ce fichier</a>.
+          <span class="glyphicon glyphicon-hand-right" ></span> 
+          Pour commencer, nous allons avoir besoin de logs à lire. Pour cela, enregistrer dans <code>$MY_DIR</code> <a href="./files/logstash-tutorial-small.log">ce fichier</a>.
         </p>
         <p>
-        Créer ensuite dans <code>$MY_DIR</code> un fichier nommé <code>logstash.conf</code>. L'éditer avec l'éditeur de texte de votre choix, et y placer le code suivant en remplaçant <code>$MY_DIR</code> par sa valeur (par exemple <code>/home/cvillard/elk</code>) :
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Créer ensuite dans <code>$MY_DIR</code> un fichier nommé <code>logstash.conf</code>. L'éditer avec l'éditeur de texte de votre choix, et y placer le code suivant en remplaçant <code>$MY_DIR</code> par sa valeur (par exemple <code>/home/cvillard/elk</code>) :
 <pre>
 # C'est un commentaire
 input {
@@ -259,7 +275,8 @@ output {
 </pre>
         </p>
         <p>
-        Démarrer LogStash en lui indiquant le fichier de configuration : 
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Démarrer LogStash en lui indiquant le fichier de configuration : 
 <pre>
 $ ./logstash-2.1.0/bin/logstash agent -f './logstash.conf'
 Settings: Default filter workers: 2
@@ -269,7 +286,8 @@ Logstash startup completed
         Vous devriez voir s'afficher dans la console le contenu du fichier, la ligne étant précédée d'un timestamp et du nom de votre PC ajoutés automatiquement par LogStash (<code>2015-11-28T15:34:10.995Z claire-i5</code> dans mon exemple).
         </p>
         <p>
-        Interrompre LogStash avec <code>Ctrl+C</code> : 
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Interrompre LogStash avec <code>Ctrl+C</code> : 
 <pre>
 ^CSIGINT received. Shutting down the pipeline. {:level=>:warn}
 Logstash shutdown completed
@@ -306,7 +324,8 @@ input {
         LogStash embarque des patterns pour traiter un grand nombre de formats de logs courants. C'est le cas pour les logs Apache traités ici.
         </p>
         <p>
-        Ouvrir le fichier <code>logstash.conf</code> créé précédemment et ajouter le bloc suivant entre le bloc <code>input</code> et le bloc <code>output</code> :
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Ouvrir le fichier <code>logstash.conf</code> créé précédemment et ajouter le bloc suivant entre le bloc <code>input</code> et le bloc <code>output</code> :
 <pre>
 filter {
     grok {
@@ -314,7 +333,8 @@ filter {
     }
 }
 </pre>
-        De plus, on va modifier l'output <code>stdout</code> pour qu'il écrive le message complet en JSON au lieu de le résumer : 
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Modifier l'output <code>stdout</code> pour qu'il écrive le message complet en JSON au lieu de le résumer : 
 <pre>
 output {
     # on définit ici les destinations pour les données traitées
@@ -325,7 +345,8 @@ output {
 </pre>
         </p>
         <p>
-        N'oubliez pas de supprimer le fichier <code>.sincedb_*</code> puis redémarrez LogStash avec la même commande que précédemment.
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          N'oubliez pas de supprimer le fichier <code>.sincedb_*</code> puis redémarrez LogStash avec la même commande que précédemment.
 <pre>
 $ ./logstash-2.1.0/bin/logstash agent -f './logstash.conf'
 Settings: Default filter workers: 2
@@ -436,7 +457,8 @@ MONTH \b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:
         L'ajout de sémantique à notre log a donc plutôt bien fonctionné. Il reste néanmoins une dernière anomalie au niveau du champ <code>@timestamp</code>. En effet, celui-ci est ajouté automatiquement par LogStash, et renseigné avec l'heure du moment où il a lu la ligne dans le fichier. Dans un cas comme ici où on relis des logs anciens, cette date n'a aucun intérêt : la date intéressante est celle contenue dans le log lui-même, soit le 4 janvier 2015 à 05:13:42 dans notre cas, et qui a été placée dans le champ <code>timestamp</code> (sans <code>@</code>) par le pattern GROK <code>COMBINEDAPACHELOG</code>. Nous allons donc utiliser le filtre <code>date</code> pour lire la valeur String du champ <code>timestamp</code> (sans <code>@</code>), la transformer en timestamp et la placer dans le champ <code>@timestamp</code> (avec <code>@</code>) en remplacement de la valeur automatique.
         </p>
         <p>
-        Pour cela, ouvrir le fichier <code>logstash.conf</code>, et ajouter un filtre après le GROK :
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Pour cela, ouvrir le fichier <code>logstash.conf</code>, et ajouter un filtre après le GROK :
 <pre>
 filter {
     grok {
@@ -450,7 +472,8 @@ filter {
 </pre>
         </p>
         <p>
-        N'oubliez pas de supprimer le fichier <code>.sincedb_*</code> puis redémarrez LogStash avec la même commande que précédemment.
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          N'oubliez pas de supprimer le fichier <code>.sincedb_*</code> puis redémarrez LogStash avec la même commande que précédemment.
 <pre>
 $ ./logstash-2.1.0/bin/logstash agent -f './logstash.conf'
 Settings: Default filter workers: 2
@@ -481,16 +504,18 @@ Logstash shutdown completed
         Nous allons commencer par envoyer les logs à ElasticSearch depuis LogStash.
         </p>
         <p>
-        Pour cela, ouvrir le fichier <code>logstash.conf</code> et modifier le bloc <code>output</code> :
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Pour cela, ouvrir le fichier <code>logstash.conf</code> et modifier le bloc <code>output</code> :
 <pre>
 output {
     elasticsearch {}
 }
 </pre>
-        Comme nous faisons fonctionner LogStash et ElasticSearch sur la même machine et sans sécurité, les paramètres par défaut conviennent. 
+          Comme nous faisons fonctionner LogStash et ElasticSearch sur la même machine et sans sécurité, les paramètres par défaut conviennent. 
         </p>
         <p>
-        Supprimer le fichier <code>.sincedb_*</code> et redémarrer Logstash. Une fois la trace <code>Logstash startup completed</code> apparue, on observe du côté d'Elasticsearch 2 nouvelles traces :
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Supprimer le fichier <code>.sincedb_*</code> et redémarrer Logstash. Une fois la trace <code>Logstash startup completed</code> apparue, on observe du côté d'Elasticsearch 2 nouvelles traces :
 <pre>
 [2015-12-06 18:25:04,575][INFO ][cluster.metadata         ] [Shirow Ishihara] [logstash-2015.01.04] creating index, cause [auto(bulk api)], templates [logstash], shards [5]/[1], mappings [_default_, logs]
 [2015-12-06 18:25:05,342][INFO ][cluster.metadata         ] [Shirow Ishihara] [logstash-2015.01.04] update_mapping [logs]
@@ -501,7 +526,8 @@ output {
         Nous allons utiliser l'API REST d'ElasticSearch pour consulter les données de ce nouvel index (donc, une seule ligne, ou un seul <em>document</em> selon la terminologie d'ElasticSearch, correspondant à notre log Apache).
         </p>
         <p>
-        Entrez dans votre navigateur l'URL suivante : <a href="http://localhost:9200/logstash-2015.01.04/_search" >http://localhost:9200/logstash-2015.01.04/_search</a>. Le résultat devrait être (une fois mis en forme) :
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Entrez dans votre navigateur l'URL suivante : <a href="http://localhost:9200/logstash-2015.01.04/_search" >http://localhost:9200/logstash-2015.01.04/_search</a>. Le résultat devrait être (une fois mis en forme) :
 <pre>
 {
 "took":226,
@@ -674,18 +700,9 @@ $ curl -XDELETE "http://localhost:9200/logstash-2015.01.04/"
         La seconde est l'installation d'un plugin de monitoring standard d'ElasticSearch, très utile pour consulter rapidement la santé de son cluster, le nombre et le contenu des index ainsi que tout le paramétrage du cluster ou des nœuds : <strong>Head</strong>.
         </p>
         <p>
-        Head est un plugin communautaire hébergé sur <a href="https://mobz.github.io/elasticsearch-head/">GitHub</a> mais reconnu par ElasticSearch. L'installation est très simple depuis Internet :
-<pre>
-$ ./elasticsearch-2.1.0/bin/plugin  install mobz/elasticsearch-head
--> Installing mobz/elasticsearch-head...
-Trying https://github.com/mobz/elasticsearch-head/archive/master.zip ...
-Downloading ..............................................DONE
-Verifying https://github.com/mobz/elasticsearch-head/archive/master.zip checksums if available ...
-NOTE: Unable to verify checksum for downloaded plugin (unable to find .sha1 or .md5 file to verify)
-Installed head into /home/claire/Documents/atelier_es_mydir/elasticsearch-2.1.0/plugins/head
-</pre>
-        Une fois installé, accédez à l'URL suivante : <a href="http://localhost:9200/_plugin/head/">http://localhost:9200/_plugin/head/</a>
-        <img src="images/es_head.png" />
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Accédez à l'URL suivante : <a href="http://localhost:9200/_plugin/head/">http://localhost:9200/_plugin/head/</a>
+          <img src="images/es_head.png" />
         </p>
         <p>
         On trouve sur le premier onglet les index (<code>.kibana</code>, qui n'existe que si vous avez déjà lancé Kibana, et notre index <code>logstash-2015.01.04</code>) et la répartition des shards (les boites vertes numérotées) entre les nœuds du cluster (un seul pour nous, nommé <code>Shirow Ishihara</code> sur la capture). Comme par défaut ElasticSearch essaye de répliquer les données une fois sur un second nœud qui n'existe pas dans notre configuration, ils apparaissent <code>Unassigned</code>, non assignés. Cela explique la santé du cluster qui vaut <code>yellow</code> (une partie des répliques est non assignée). Elle serait <code>green</code> si toutes les répliques étaient assignées à des nœuds, et <code>red</code> si certaines données primaires étaient en cours de récupération (après un redémarrage de notre unique nœud par exemple).
@@ -700,19 +717,28 @@ Installed head into /home/claire/Documents/atelier_es_mydir/elasticsearch-2.1.0/
         Les onglets "Recherche structurée" et "Autres requêtes" permettent de faire des requêtes complexes sur le cluster.
         </p>
         <p>
-        Maintenant que nous avons installé Head, nous allons pouvoir nous en servir pour supprimer notre index mal configuré. Pour cela, revenir sur l'onglet "Aperçu". Cliquer sur le bouton "Action" sous le nom de l'index <code>logstash-2015.01.04</code> et choisir "Effacer...".
+        Nous allons donc nous servir de Head pour supprimer notre index mal configuré. 
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Depuis l'onglet "Aperçu", cliquer sur le bouton "Action" sous le nom de l'index <code>logstash-2015.01.04</code> et choisir "Effacer...".
         </p>
         <p>
         <img src="images/es_effacer.png" />
         </p>
         <p>
-        Entrer le texte "SUPPRIMER" dans la pop-up puis cliquer sur OK pour confirmer. Une nouvelle pop-up devrait indiquer <code>{"acknowledged":true}</code> quasiment instantanément, et l'index disparaître de l'écran après avoir cliqué sur OK.
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Entrer le texte "SUPPRIMER" dans la pop-up puis cliquer sur OK pour confirmer. Une nouvelle pop-up devrait indiquer <code>{"acknowledged":true}</code> quasiment instantanément, et l'index disparaître de l'écran après avoir cliqué sur OK.
         </p>
         <p>
         Nous pouvons maintenant indiquer à ElasticSearch comment interpréter les futures données de type <code>logs</code> que nous allons lui envoyer. Pour cela, nous allons rédiger un <em>template</em>. C'est un élément de configuration qui contient, pour un type donné, quels champs il contient et comment les interpréter. Ce <em>template</em> sera automatiquement transformé en <em>mapping</em> lors de la création d'un index dont le nom correspondra au champ d'action du <em>template</em>.
         </p>
         <p>
-        Pour faire cela, le programme cURL est le plus pratique. Taper la commande suivante (attention aux sauts de lignes intempestifs !) :
+          Pour faire cela, le programme cURL est le plus pratique. 
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Taper la commande suivante (attention aux sauts de lignes intempestifs !) :
 <pre>
 curl -XPUT "http://localhost:9200/_template/logs_template" -d '
 {
@@ -734,10 +760,16 @@ curl -XPUT "http://localhost:9200/_template/logs_template" -d '
             Pour simplifier, nous ne définissons que les 3 champs qui posaient problème. Pour fiabiliser au maximum l'indexation, il est préférable dans un cas réel de définir l'ensemble des champs pour éviter qu'une valeur "bizarre" ne vienne perturber la configuration automatique des types et empêcher de futures indexations.
         </div>
         <p>
-        Ensuite, supprimer le fichier <code>.sincedb_*</code> et redémarrer LogStash. Rafraîchir la page de Head jusqu'à voir apparaître l'index avec le même nom que précédemment.
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Ensuite, supprimer le fichier <code>.sincedb_*</code> et redémarrer LogStash. 
         </p>
         <p>
-        Vérifier le type du champ <code>bytes</code> avec l'URL suivante : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes">http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes</a>. On voit qu'il est bien considéré comme un entier, nous pourrons donc faire des requêtes avec des comparaisons de nombres dessus.
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Rafraîchir la page de Head jusqu'à voir apparaître l'index avec le même nom que précédemment.
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Vérifier le type du champ <code>bytes</code> avec l'URL suivante : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes">http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes</a>. On voit qu'il est bien considéré comme un entier, nous pourrons donc faire des requêtes avec des comparaisons de nombres dessus.
 <pre>
 {
   "logstash-2015.01.04":{
@@ -759,10 +791,12 @@ curl -XPUT "http://localhost:9200/_template/logs_template" -d '
         Nous avons vu comment paramétrer l'indexation d'ElasticSearch, et comment gérer son contenu via Head. Pour préparer l'étape suivante avec Kibana, nous allons maintenant lui faire indexer une volumétrie plus importante de données.
         </p>
         <p>
-        Pour cela, enregistrer le <a href="./files/logstash-tutorial-dataset.log">fichier suivant</a> sur votre disque.
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Pour cela, enregistrer le <a href="./files/logstash-tutorial-dataset.log">fichier suivant</a> sur votre disque.
         </p>
         <p>
-        Ouvrir le fichier <code>logstash.conf</code> et modifier le début pour lire le nouveau fichier au lieu de l'ancien.
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Ouvrir le fichier <code>logstash.conf</code> et modifier le début pour lire le nouveau fichier au lieu de l'ancien.
 <pre>
 input {
   # On définit ici les sources de données à traiter
@@ -776,7 +810,16 @@ input {
 </pre>
         </p>
         <p>
-        Supprimer l'index dans ElasticSearch via Head ou cURL, supprimer le fichier <code>.sincedb_*</code> et redémarrer LogStash. Rafraîchir la page de Head jusqu'à voir réapparaître l'index. Il doit contenir maintenant 100 documents et non plus 1 seul.
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Supprimer l'index dans ElasticSearch via Head ou cURL.
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Supprimer le fichier <code>.sincedb_*</code> et redémarrer LogStash. 
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Rafraîchir la page de Head jusqu'à voir réapparaître l'index. Il doit contenir maintenant 100 documents et non plus 1 seul.
         </p>
         <p>
           <img src="images/es_100.png" />
@@ -787,16 +830,18 @@ input {
         Dans cette étape, nous allons voir comment Kibana permet de rechercher facilement dans ElasticSearch, et nous créerons un dashboard.
         </p>
         <p>
-        Si Kibana est arrêté, lancez le avec la commande :
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Si Kibana est arrêté, lancez le avec la commande :
 <pre>
 $ ./kibana-4.3.0-linux-x64/bin/kibana
 </pre>
-        Une fois la trace suivante obtenue dans la console :
+          Une fois la trace suivante obtenue dans la console :
 <pre>
   log   [14:11:46.405] [info][listening] Server running at http://0.0.0.0:5601
 </pre>
 
-        Vérifier que Kibana répond à l'URL <a href="http://localhost:5601/">http://localhost:5601/</a>.
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Vérifier que Kibana répond à l'URL <a href="http://localhost:5601/">http://localhost:5601/</a>.
         </p>
         <p>
         Au premier lancement de Kibana, il nous demande quelques éléments de configuration de manière à savoir quelles données contenues dans ElasticSearch il va devoir traiter.
@@ -808,9 +853,13 @@ $ ./kibana-4.3.0-linux-x64/bin/kibana
         Nous souhaitons traiter des données basées sur le temps (<em>time-based events</em>), situés dans des index (un seul index en fait) dont le nom commence par <code>logstash-*</code> et dont le champ normalisé contenant le timestamp est <code>@timestamp</code> (rappelez vous précédemment, nous avions configuré tout le nécessaire dans Logstash pour que ce champ soit correctement positionné).
         </p>
         <p>
-        L'écran de configuration doit donc être rempli de la manière suivante :
-        <img src="./images/kibana_settings.png" />
-        Cliquez ensuite sur <code>Create</code>.
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Remplissez les champs de l'écran de configuration de la manière suivante :
+          <img src="./images/kibana_settings.png" />
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Cliquez ensuite sur <code>Create</code>.
         </p>
         <p>
         Un second écran nous affiche la configuration dans ElasticSearch de tous les champs connus dans les index correspondant au pattern <code>logstash-*</code> configuré précédemment. Il est possible de changer l'affichage des champs dans les dashboards pour une meilleure lisibilité en cliquant sur le petit icône en forme de stylo en face de chaque ligne. Nous allons pour notre part garder la configuration par défaut des champs.
@@ -819,16 +868,22 @@ $ ./kibana-4.3.0-linux-x64/bin/kibana
         Outre la configuration des index à scruter que nous avons déjà ajustée, Kibana offre de nombreuses options de configuration via les écrans de Settings. L'avertissement sur la page Advanced est clair : <em>Caution: You can break stuff here</em>. Nous allons donc conserver les paramètres par défaut.
         </p>
         <p>
-        Nous pouvons maintenant cliquer sur le menu <code>Discover</code> pour commencer à parcourir nos données. Pour l'instant, il ne trouve aucun résultat car par défaut il cherche des données datées des dernières 15 minutes et nos données de test datent du 04 janvier 2015.
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Cliquez sur le menu <code>Discover</code> pour commencer à parcourir les données. 
         </p>
         <p>
-        Pour changer cela et voir nos données, cliquer sur l'icône en forme de pendule en haut à droite de l'écran, sur le menu <code>Absolute</code> en choisir en date de début <code>2015-01-04 06:00:00.000</code> et en date de fin <code>2015-01-04 07:00:00.000</code>.
+          Pour l'instant, il ne trouve aucun résultat car par défaut il cherche des données datées des dernières 15 minutes et nos données de test datent du 04 janvier 2015.
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Pour changer cela et voir nos données, cliquer sur l'icône en forme de pendule en haut à droite de l'écran, sur le menu <code>Absolute</code> en choisir en date de début <code>2015-01-04 06:00:00.000</code> et en date de fin <code>2015-01-04 07:00:00.000</code>.
         </p>
         <p>
         <img src="./images/kibana_time_picker.png" />
         </p>
         <p>
-        Cliquer sur <code>Go</code>.
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Cliquer sur <code>Go</code>.
         </p>
         <p>
         Cette fois, nous avons enfin des données ! Kibana nous affiche par défaut, la répartition des valeurs de <code>@timestamp</code> par minute sur la plage de dates sélectionnée. Cela peut déjà être très utile pour monitorer l'activité d'un site Web, puisque nos données de test sont des logs Apache.
@@ -837,16 +892,28 @@ $ ./kibana-4.3.0-linux-x64/bin/kibana
         La barre de recherche en haut de l'écran contient par défaut le texte <code>*</code>, qui signifie "tous les documents".
         </p>
         <p>
-        Pour affiner cette recherche, il est possible de rechercher un mot ou un ensemble de mots. Par exemple, entrez <code>*.html</code> et validez pour ne voir que les logs faisant référence à l'accès à des ressources HTML.
+          Pour affiner cette recherche, il est possible de rechercher un mot ou un ensemble de mots. 
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Entrez <code>*.html</code> et validez pour ne voir que les logs faisant référence à l'accès à des ressources HTML.
         </p>
         <p>
         Vous pouvez tester d'autres recherches, sur les codes retour ou le contenu des URL par exemple.
         </p>
         <p>
-        Nous voulons maintenant rechercher tous les logs venant d'un client dont l'IP commence par <code>86.1</code>. Entrez donc <code>86.1</code> dans le champ de recherche et validez : Aucun résultat ?! 
+          Nous voulons maintenant rechercher tous les logs venant d'un client dont l'IP commence par <code>86.1</code>. 
         </p>
         <p>
-        Essayons alors de préciser le champ sur lequel nous voulons rechercher. Il s'agit du champ <code>clientip</code>. Entrez donc <code>clientip:86.1</code> et validez... Pas mieux :(
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Entrez donc <code>86.1</code> dans le champ de recherche et validez : Aucun résultat ?! 
+        </p>
+        <p>
+          Essayons alors de préciser le champ sur lequel nous voulons rechercher. Il s'agit du champ <code>clientip</code>. 
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Entrez donc <code>clientip:86.1</code> et validez... Pas mieux :(
         </p>
         <p>
         C'est en fait ici que les paramètres d'indexation définis dans le template Elasticsearch à l'étape précédente entrent en jeu. Nous n'avons pas configuré explicitement ce champ, ElasticSearch a donc fait des déductions pour déterminer son format et la manière de l'indexer. Si nous demandons cette configuration à ElasticSearch via l'URL <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/clientip" >http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/clientip</a> nous avons le résultat suivant :
@@ -884,40 +951,66 @@ $ ./kibana-4.3.0-linux-x64/bin/kibana
         Les parties qui nous intéressent sont : <code>"type":"string"</code> et <code>"index":"not_analyzed"</code>. Le champ est une chaîne de caractères et n'est pas analysé lors de l'indexation. Cela signifie qu'ElasticSearch va indexer la valeur exacte du champ, et lors de la recherche, si on ne lui précise pas que l'on recherche une partie seulement de cette valeur, il va chercher la valeur exacte. Ce qui explique que nous n'ayons aucun résultat avec notre recherche <code>clientip:86.1</code>.
         </p>
         <p>
-        Nous allons donc indiquer à ElasticSearch que la chaîne entrée doit correspondre au début de la valeur du champ, mais que le champ peut contenir d'autres caractères à la suite. Pour cela, nous ajoute une étoile à la fin : <code>clientip:86.1*</code>. Nous obtenons maintenant bien 3 résultats, correspondant à 3 requêtes faites depuis l'IP 86.1.76.62.
+          Nous allons donc indiquer à ElasticSearch que la chaîne entrée doit correspondre au début de la valeur du champ, mais que le champ peut contenir d'autres caractères à la suite en ajoutant une étoile à la fin de la recherche. 
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Entrez la recherche : <code>clientip:86.1*</code> et validez. 
+        </p>
+        <p>
+          Nous obtenons maintenant bien 3 résultats, correspondant à 3 requêtes faites depuis l'IP 86.1.76.62.
         </p>
         <p>
         Dans la colonne à gauche de l'écran, Kibana affiche tous les champs disponible dans les données retournées par la recherche, ainsi qu'une répartition des valeurs de chaque champ. Ainsi, si on clique sur le champ <code>response</code>, on voit que 98% des requêtes ont retourné un code 200, 1% un code 404 et 1% un code 304...
         </p>
-        <img src="./images/kibana_fields_facets.png" />
+        <p>
+          <img src="./images/kibana_fields_facets.png" />
+        </p>
         <p>
         L'affichage du tableau des résultats est pour l'instant un peu brut : il affiche uniquement le timestamp et le contenu brut du document tel que stocké dans ElasticSearch. Ce n'est pas très lisible, nous allons donc configurer Kibana pour afficher les informations les plus intéressantes.
         </p>
         <p>
-        Pour cela, dans la colonne à gauche de l'écran pointer la souris sans cliquer sur le champ <code>response</code> et cliquer sur le petit bouton <code>add</code> qui s'affiche. Répéter l'opération avec les champs <code>clientip</code> et <code>request</code>. Le tableau est déjà bien plus lisible !
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Dans la colonne à gauche de l'écran pointer la souris sans cliquer sur le champ <code>response</code> et cliquer sur le petit bouton <code>add</code> qui s'affiche. 
         </p>
         <p>
-        A vous maintenant de sélectionner d'autres champs, d'en supprimer, de changer l'ordre des colonnes dans le tableau puis de trier le tableau selon l'une ou l'autre des colonnes. Essayez aussi de cliquer sur certaines zones du graphique pour voir leur effet...
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Répéter l'opération avec les champs <code>clientip</code> et <code>request</code>. Le tableau est déjà bien plus lisible !
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          A vous maintenant de sélectionner d'autres champs, d'en supprimer, de changer l'ordre des colonnes dans le tableau puis de trier le tableau selon l'une ou l'autre des colonnes. Essayez aussi de cliquer sur certaines zones du graphique pour voir leur effet...
         </p>
         <img src="./images/kibana_discover_final.png" />
         <p>
-        Passons maintenant à l'onglet <code>Visualize</code>. Cet onglet permet de créer des graphiques à partir des données retournées par la recherche. Par exemple, nous pouvons reproduire le graphique du nombre de documents par minute vu sur la page précédente.
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Cliquez sur l'onglet <code>Visualize</code>. 
         </p>
         <p>
-        Pour cela, configurer les options de graphique dans la colonne de gauche comme sur la capture d'écran ci-dessous et cliquer sur la flèche verte en haut pour afficher le graphique :
+          Cet onglet permet de créer des graphiques à partir des données retournées par la recherche. Par exemple, nous pouvons reproduire le graphique du nombre de documents par minute vu sur la page précédente.
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Configurer les options de graphique dans la colonne de gauche comme sur la capture d'écran ci-dessous et cliquer sur la flèche verte en haut pour afficher le graphique :
         </p>
         <img src="./images/kibana_visualize.png" />
         <p>
         De nombreuses autres visualisations sont disponible, outre l'affichage en histogramme que nous avons vu. Pour les découvrir, cliquer sur l'icône <img src="./images/kibana_new_viz.png" /> à côté de la barre de recherche. Les autres icônes permettent également de sauvegarder une visualisation, d'en charger une sauvegardée précédemment et de les partager.
         </p>
         <p>
-        N'oubliez pas de sauvegarder 2 ou 3 visualisations pour pouvoir les utiliser dans la suite du tutoriel...
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          N'oubliez pas de sauvegarder 2 ou 3 visualisations pour pouvoir les utiliser dans la suite du tutoriel...
         </p>
         <p>
-        Enfin, l'onglet <code>Dashboard</code> permet de configurer des tableaux de bords et de les sauvegarder.
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Cliquez sur l'onglet <code>Dashboard</code>
+         </p>
+        <p> 
+          Il permet de configurer des tableaux de bords et de les sauvegarder.
         </p>
         <p>
-        Créez un nouveau Dashboard comme indiqué en choisissant différentes recherches et visualisations enregistrées précédemment, et observez comme il évolue en fonction des recherches que vous faites. 
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Créez un nouveau Dashboard comme indiqué en choisissant différentes recherches et visualisations enregistrées précédemment, et observez comme il évolue en fonction des recherches que vous faites. 
         </p>
         <p>
         Un exemple d'un dashboard affichant la répartition des codes retour par valeur, la répartition des timestamp par minute et la répartition de la taille des réponses regroupées par 10k bytes :
