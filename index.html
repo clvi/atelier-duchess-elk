@@ -10,7 +10,7 @@
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
-		<!-- home made custom CSS -->
+        <!-- home made custom CSS -->
     <link href="css/tuto.css" rel="stylesheet">
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -26,46 +26,46 @@
       <div>
         <h1> Hands On : LogStash, ElasticSearch, Kibana, et plus encore </h1>
         <p class="lead">Ce tutoriel détaillera pas à pas : 
-					<ul>
-						<li>L'installation locale de LogStash, ElasticSearch et Kibana</li>
-						<li>Le traitement de fichiers de logs par LogStash</li>
-						<li>L'indexation dans ElasticSearch</li>
-						<li>L'exploitation des données via Kibana</li>
-						<li>Et pour aller plus loin : l'utilisation d'un broker de messages et d'agents distants, la mise en cluster d'ElasticSearch, ...</li>
-					</ul>
-				</p>
-				<div class="alert alert-warning" role="alert">
-					Dans le but d'éviter les incidents de démarrage lors de l'atelier, merci de suivre la partie "Pré-requis et installation" avant l'atelier, depuis un ordinateur connecté à Internet !
-				</div>
-				<div>
-					<ul>
-						<li><a href="#install">Pré-requis et installation</a></li>
-						<li><a href="#logstash">Étape 1 : LogStash</a></li>
-						<li><a href="#es">Étape 2 : ElasticSearch</a></li>
-						<li><a href="#kibana">Étape 3 : Kibana</a></li>
-						<li><a href="#further">Pour aller plus loin...</a>
-							<ul>
-								<li><a href="#rspec">Tests unitaires de LogStash</a>
-								<li><a href="#broker">Utilisation d'un agent et d'un broker de messages</a>
-								<li><a href="#cluster">Clustering</a>
-							</ul>
-						</li>
-					</ul>
-				</div>
+                    <ul>
+                        <li>L'installation locale de LogStash, ElasticSearch et Kibana</li>
+                        <li>Le traitement de fichiers de logs par LogStash</li>
+                        <li>L'indexation dans ElasticSearch</li>
+                        <li>L'exploitation des données via Kibana</li>
+                        <li>Et pour aller plus loin : l'utilisation d'un broker de messages et d'agents distants, la mise en cluster d'ElasticSearch, ...</li>
+                    </ul>
+                </p>
+                <div class="alert alert-warning" role="alert">
+                    Dans le but d'éviter les incidents de démarrage lors de l'atelier, merci de suivre la partie "Pré-requis et installation" avant l'atelier, depuis un ordinateur connecté à Internet !
+                </div>
+                <div>
+                    <ul>
+                        <li><a href="#install">Pré-requis et installation</a></li>
+                        <li><a href="#logstash">Étape 1 : LogStash</a></li>
+                        <li><a href="#es">Étape 2 : ElasticSearch</a></li>
+                        <li><a href="#kibana">Étape 3 : Kibana</a></li>
+                        <li><a href="#further">Pour aller plus loin...</a>
+                            <ul>
+                                <li><a href="#rspec">Tests unitaires de LogStash</a>
+                                <li><a href="#broker">Utilisation d'un agent et d'un broker de messages</a>
+                                <li><a href="#cluster">Clustering</a>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
       </div>
 
       <div>
-				<h2 id="install">Pré-requis et installation</h2>
+                <h2 id="install">Pré-requis et installation</h2>
 L'utilisation de la machine virtuelle demande au minimum un ordinateur avec un CPU puissant (type Intel Core i5), <strong>8Go de RAM</strong>, et un système d'exploitation (Windows, Mac ou Linux) <strong>64 bits</strong>. Si votre machine ne dispose pas de ce hardware minimum, merci d'installer avant le début de l'atelier les logiciels indiqués plus bas, dans la section <a href="#novm">Sans machine virtuelle</a> plus bas.
 
-					<h3>Utilisation de la machine virtuelle fournie</h3>
-					<div class="alert alert-danger" role="alert">
-						TODO
-					</div>
+                    <h3>Utilisation de la machine virtuelle fournie</h3>
+                    <div class="alert alert-danger" role="alert">
+                        TODO
+                    </div>
  
-					<h3 id="novm">Sans machine virtuelle</h3>
+                    <h3 id="novm">Sans machine virtuelle</h3>
 Pour tous les logiciels qui ne seront pas installés sous forme de package, nous allons placer les binaires dans un même dossier. Tous les chemins seront relatifs à ce dossier, par exemple pour Linux : <code>/home/cvillard/elk</code>. Il y sera fait référence via la variable : <code>$MY_DIR</code>.
-							<h4>Java 8</h4>
+                            <h4>Java 8</h4>
 <p><strong>Linux (Ubuntu)</strong></p>
 <p>
 Contrôler la version de Java installée : 
@@ -99,7 +99,7 @@ Lancer l'installation en conservant les options par défaut.
 Vérifier que l'installation s'est bien passée en reprenant la commande de vérification.
 </p>
 
-							<h4>LogStash</h4>
+                            <h4>LogStash</h4>
 <p>Nous utiliserons la version 2.1.0 de LogStash. </p>
 <p>Télécharger le ZIP ou le TAR.GZ de la version 2.1.0 à cette adresse : <a href="https://www.elastic.co/downloads/logstash">https://www.elastic.co/downloads/logstash</a>.</p>
 <p>Décompresser l'archive dans <code>$MY_DIR</code>. </p>
@@ -110,7 +110,7 @@ logstash 2.1.0
 </pre>
 </p>
 
-							<h4>ElasticSearch</h4>
+                            <h4>ElasticSearch</h4>
 <p>Nous utiliserons la version 2.1.0 d'ElasticSearch. </p>
 <p>Télécharger le ZIP ou le TAR de la version 2.1.0 à cette adresse : <a href="https://www.elastic.co/downloads/elasticsearch">https://www.elastic.co/downloads/elasticsearch</a>.</p> 
 <p>Décompresser l'archive dans <code>$MY_DIR</code>.</p> 
@@ -138,7 +138,7 @@ Contrôler à l'URL <a href="http://localhost:9200/">http://localhost:9200/</a> 
 }
 </pre>
 </p>
-							<h4>cURL</h4>
+                            <h4>cURL</h4>
 <p>
 cURL est utile pour soumettre des requêtes à ElasticSearch.
 </p>
@@ -155,7 +155,7 @@ Télécharger le ZIP à cette adresse : <a href="http://curl.haxx.se/download.ht
 </p>
 
 
-							<h4>Kibana</h4>
+                            <h4>Kibana</h4>
 <p>La version de Kibana compatible avec ElasticSearch 2.1.x est la version 4.3.0. </p>
 <p>Télécharger la version correspondant à votre système à l'adresse: <a href="https://www.elastic.co/downloads/kibana">https://www.elastic.co/downloads/kibana</a>. </p>
 <p>Décompresser l'archive dans <code>$MY_DIR</code>. </p>
@@ -170,7 +170,7 @@ Une fois la trace suivante obtenue dans la console :
 Vérifier que Kibana répond à l'URL <a href="http://localhost:5601/">http://localhost:5601/</a>. On ne va rien configurer pour l'instant, cela fera partie de la suite du tutoriel.
 </p>
 
-							<h4>RabbitMQ</h4>
+                            <h4>RabbitMQ</h4>
 <p>Erlang est nécessaire au fonctionnement de RabbitMQ.
 </p>
 <p><strong>Windows</strong></p>
@@ -238,11 +238,11 @@ Status of node 'rabbit@claire-i5' ...
 </p>
 <p>Pour les autres distributions, se reporter à la <a href="https://www.rabbitmq.com/download.html">documentation de l'outil</a> (peut nécessiter de compiler Erlang).
 </p>
-	
+    
       </div>
 
-			<div>
-				<h2 id="logstash">Étape 1 : LogStash</h2>
+            <div>
+                <h2 id="logstash">Étape 1 : LogStash</h2>
 <p>
 Dans cette étape, nous allons lire un fichier de logs avec LogStash, découper ces logs pour leur ajouter de la sémantique, et les faire écrire dans la sortie standard. 
 </p>
@@ -254,18 +254,18 @@ Créer ensuite dans <code>$MY_DIR</code> un fichier nommé <code>logstash.conf</
 <pre>
 # C'est un commentaire
 input {
-	# On définit ici les sources de données à traiter
-	file {
-		path => "$MY_DIR/logstash-tutorial-small.log"
-		start_position => beginning 
-	}
+    # On définit ici les sources de données à traiter
+    file {
+        path => "$MY_DIR/logstash-tutorial-small.log"
+        start_position => beginning 
+    }
 }
 
 output {
-	# on définit ici les destinations pour les données traitées
-	stdout {
-		# Sortie standard : pas de paramètres
-	}
+    # on définit ici les destinations pour les données traitées
+    stdout {
+        # Sortie standard : pas de paramètres
+    }
 }
 
 </pre>
@@ -286,13 +286,13 @@ Interrompre LogStash avec <code>Ctrl+C</code> :
 ^CSIGINT received. Shutting down the pipeline. {:level=>:warn}
 Logstash shutdown completed
 </pre>
-</p>	
+</p>    
 
 <p>
 Nous avons donc lu un fichier avec LogStash et l'avons recopié sur la sortie standard. C'est un bon début, mais ce n'est pas suffisant. Nous allons maintenant modifier la configuration pour découper chaque ligne lue dans le fichier en un message JSON contenant des champs nommés. Cela permettra d'ajouter de la sémantique à chaque ligne, et ensuite de faire des recherches une fois dans ElasticSearch.
 </p>
 
-				<div class="alert alert-info" role="alert">
+                <div class="alert alert-info" role="alert">
 <p>
 Pour éviter de relire des lignes déjà lues en cas de redémarrage de LogStash, celui-ci stocke sur le disque l'endroit où il se trouve dans les fichiers qu'il lit. Par défaut, il crée des fichiers <code>.sincedb_*</code> dans le <code>$HOME</code> de l'utilisateur qui le lance. 
 </p>
@@ -303,17 +303,17 @@ Ainsi, pour faire relire à LogStash un fichier déjà lu, il faut enlever la li
 Il est également possible de paramétrer l'endroit où LogStash écrit ses informations et le nom du fichier correspondant pour éviter de polluer le dossier home et rendre le nom plus explicite que <code>.sincedb_1bd0462c651e913184f7efa9f40f84c6</code> :
 <pre>
 input {
-	# On définit ici les sources de données à traiter
-	file {
-		path => "$MY_DIR/logstash-tutorial-small.log"
-		start_position => beginning 
-		# on customise le sincedb_path et le nom du fichier
-		sincedb_path => "$MY_DIR/sincedb/sincedb_apache.log"
-	}
+    # On définit ici les sources de données à traiter
+    file {
+        path => "$MY_DIR/logstash-tutorial-small.log"
+        start_position => beginning 
+        # on customise le sincedb_path et le nom du fichier
+        sincedb_path => "$MY_DIR/sincedb/sincedb_apache.log"
+    }
 }
 </pre>
 </p>
-				</div>
+                </div>
 <p>
 LogStash embarque des patterns pour traiter un grand nombre de formats de logs courants. C'est le cas pour les logs Apache traités ici.
 </p>
@@ -321,18 +321,18 @@ LogStash embarque des patterns pour traiter un grand nombre de formats de logs c
 Ouvrir le fichier <code>logstash.conf</code> créé précédemment et ajouter le bloc suivant entre le bloc <code>input</code> et le bloc <code>output</code> :
 <pre>
 filter {
-	grok {
-		match => { "message" => "%{COMBINEDAPACHELOG}"}
-	}
+    grok {
+        match => { "message" => "%{COMBINEDAPACHELOG}"}
+    }
 }
 </pre>
 De plus, on va modifier l'output <code>stdout</code> pour qu'il écrive le message complet en JSON au lieu de le résumer : 
 <pre>
 output {
-	# on définit ici les destinations pour les données traitées
-	stdout {
-		codec => json
-	}
+    # on définit ici les destinations pour les données traitées
+    stdout {
+        codec => json
+    }
 }
 </pre>
 </p>
@@ -351,28 +351,28 @@ Logstash shutdown completed
 Une fois mis en forme, on voit que la ligne de log a maintenant la forme suivante :
 <pre>
 {
-	"message":"83.149.9.216 - - [04/Jan/2015:05:13:42 +0000] \"GET /presentations/logstash-monitorama-2013/images/kibana-search.png HTTP/1.1\" 200 203023 \"http://semicomplete.com/presentations/logstash-monitorama-2013/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\"",
-	"@version":"1",
-	"@timestamp":"2015-11-28T16:10:15.811Z",
-	"host":"claire-i5",
-	"path":"/home/claire/Documents/atelier_es_mydir/logstash-tutorial-small.log",
-	"clientip":"83.149.9.216",
-	"ident":"-",
-	"auth":"-",
-	"timestamp":"04/Jan/2015:05:13:42 +0000",
-	"verb":"GET",
-	"request":"/presentations/logstash-monitorama-2013/images/kibana-search.png",
-	"httpversion":"1.1",
-	"response":"200",
-	"bytes":"203023",
-	"referrer":"\"http://semicomplete.com/presentations/logstash-monitorama-2013/\"",
-	"agent":"\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\""
+    "message":"83.149.9.216 - - [04/Jan/2015:05:13:42 +0000] \"GET /presentations/logstash-monitorama-2013/images/kibana-search.png HTTP/1.1\" 200 203023 \"http://semicomplete.com/presentations/logstash-monitorama-2013/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\"",
+    "@version":"1",
+    "@timestamp":"2015-11-28T16:10:15.811Z",
+    "host":"claire-i5",
+    "path":"/home/claire/Documents/atelier_es_mydir/logstash-tutorial-small.log",
+    "clientip":"83.149.9.216",
+    "ident":"-",
+    "auth":"-",
+    "timestamp":"04/Jan/2015:05:13:42 +0000",
+    "verb":"GET",
+    "request":"/presentations/logstash-monitorama-2013/images/kibana-search.png",
+    "httpversion":"1.1",
+    "response":"200",
+    "bytes":"203023",
+    "referrer":"\"http://semicomplete.com/presentations/logstash-monitorama-2013/\"",
+    "agent":"\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\""
 }
 </pre>
 Les différentes partie du log d'origine ont été découpées et placées dans des champs nommés. La ligne d'origine est elle conservée en l'état dans le champ <code>message</code>.
 </p>
 
-				<div class="alert alert-info" role="alert">
+                <div class="alert alert-info" role="alert">
 <p>
 <strong>Qu'avons-nous fait ?</strong>
 </p>
@@ -426,9 +426,9 @@ On est plutôt contents de ne pas avoir eu à l'écrire nous-même, et on compre
 <p>
 La mise au point d'un pattern GROK "maison" (non embarqué par défaut), pour traiter un format de log non standard, peut donc s'avérer ardue. Pour aider à sa mise au point, il existe un outil en ligne très pratique : <a href="http://grokdebug.herokuapp.com/">Grok Debugger</a>. Il liste également <a href="http://grokdebug.herokuapp.com/patterns">l'ensemble des patterns embarqués dans LogStash</a>.
 </p>
-				</div>
+                </div>
 
-				<div class="alert alert-warning" role="alert">
+                <div class="alert alert-warning" role="alert">
 <p>
 L'extrait de configuration GROK mentionné au dessus contient la ligne suivante pour désigner le mois :
 <pre>
@@ -442,7 +442,7 @@ De plus, le pattern de date <code>"dd/MMM/YYYY:HH:mm:ss Z"</code> utilisé juste
 <p>
 C'est pour ces 2 raisons qu'il faut éviter autant que possible les patterns de date contenant du texte pour les jours et les mois, au profit de leur écriture en chiffre qui elle n'est pas dépendante de la locale et n'est pas ambigüe.
 </p>
-				</div>
+                </div>
 
 <p>
 L'ajout de sémantique à notre log a donc plutôt bien fonctionné. Il reste néanmoins une dernière anomalie au niveau du champ <code>@timestamp</code>. En effet, celui-ci est ajouté automatiquement par LogStash, et renseigné avec l'heure du moment où il a lu la ligne dans le fichier. Dans un cas comme ici où on relis des logs anciens, cette date n'a aucun intérêt : la date intéressante est celle contenue dans le log lui-même, soit le 4 janvier 2015 à 05:13:42 dans notre cas, et qui a été placée dans le champ <code>timestamp</code> (sans <code>@</code>) par le pattern GROK <code>COMBINEDAPACHELOG</code>. Nous allons donc utiliser le filtre <code>date</code> pour lire la valeur String du champ <code>timestamp</code> (sans <code>@</code>), la transformer en timestamp et la placer dans le champ <code>@timestamp</code> (avec <code>@</code>) en remplacement de la valeur automatique.
@@ -451,13 +451,13 @@ L'ajout de sémantique à notre log a donc plutôt bien fonctionné. Il reste n�
 Pour cela, ouvrir le fichier <code>logstash.conf</code>, et ajouter un filtre après le GROK :
 <pre>
 filter {
-	grok {
-		match => { "message" => "%{COMBINEDAPACHELOG}"}
-	}
-	date {
-		# exemple de date: 04/Jan/2015:05:13:42 +0000
-		match => [ "timestamp", "dd/MMM/YYYY:HH:mm:ss Z" ] 
-	}
+    grok {
+        match => { "message" => "%{COMBINEDAPACHELOG}"}
+    }
+    date {
+        # exemple de date: 04/Jan/2015:05:13:42 +0000
+        match => [ "timestamp", "dd/MMM/YYYY:HH:mm:ss Z" ] 
+    }
 }
 </pre>
 </p>
@@ -475,8 +475,8 @@ Logstash shutdown completed
 <p>
 Si on compare les champs <code>@timestamp</code> et <code>timestamp</code> dans la sortie on a maintenant les valeurs suivantes :
 <pre>
-	"@timestamp":"2015-01-04T05:13:42.000Z",
-	"timestamp":"04/Jan/2015:05:13:42 +0000",
+    "@timestamp":"2015-01-04T05:13:42.000Z",
+    "timestamp":"04/Jan/2015:05:13:42 +0000",
 </pre>
 
 Les deux valeurs sont bien identiques, on pourra donc une fois dans ElasticSearch faire une recherche sur le champ standard <code>@timestamp</code> et avoir des résultats pertinents...
@@ -487,8 +487,8 @@ En cas de soucis, voici <a href="./files/logstash_p1.conf" >le fichier <code>log
 
       </div>
 
-			<div>
-				<h2 id="es">Étape 2 : ElasticSearch</h2>
+            <div>
+                <h2 id="es">Étape 2 : ElasticSearch</h2>
 <p>
 Dans cette étape, nous allons utiliser le résultat de l'étape précédente pour indexer les logs découpés dans ElasticSearch et les rechercher sommairement via l'API REST d'ElasticSearch. Nous apprendrons également comme configurer sommairement ElasticSearch et comment le monitorer via un plugin.
 </p>
@@ -745,9 +745,9 @@ curl -XPUT "http://localhost:9200/_template/logs_template" -d '
 {"acknowledged":true}
 </pre>
 </p>
-				<div class="alert alert-info" role="alert">
-					Pour simplifier, nous ne définissons que les 3 champs qui posaient problème. Pour fiabiliser au maximum l'indexation, il est préférable dans un cas réel de définir l'ensemble des champs pour éviter qu'une valeur "bizarre" ne vienne perturber la configuration automatique des types et empêcher de futures indexations.
-				</div>
+                <div class="alert alert-info" role="alert">
+                    Pour simplifier, nous ne définissons que les 3 champs qui posaient problème. Pour fiabiliser au maximum l'indexation, il est préférable dans un cas réel de définir l'ensemble des champs pour éviter qu'une valeur "bizarre" ne vienne perturber la configuration automatique des types et empêcher de futures indexations.
+                </div>
 <p>
 Ensuite, supprimer le fichier <code>.sincedb_*</code> et redémarrer LogStash. Rafraîchir la page de Head jusqu'à voir apparaître l'index avec le même nom que précédemment.
 </p>
@@ -798,8 +798,8 @@ Supprimer l'index dans ElasticSearch via Head ou cURL, supprimer le fichier <cod
 </p>
       </div>
 
-			<div>
-				<h2 id="kibana">Étape 3 : Kibana</h2>
+            <div>
+                <h2 id="kibana">Étape 3 : Kibana</h2>
 <p>
 Dans cette étape, nous allons voir comment Kibana permet de rechercher facilement dans ElasticSearch, et nous créerons un dashboard.
 </p>
@@ -818,7 +818,7 @@ Vérifier que Kibana répond à l'URL <a href="http://localhost:5601/">http://lo
 <p>
 Au premier lancement de Kibana, il nous demande quelques éléments de configuration de manière à savoir quelles données contenues dans ElasticSearch il va devoir traiter.
 </p>
-				<div class="alert alert-warning" role="alert">Attention si votre cluster ElasticSearch contient un grand nombre de templates utilisés dans tous vos index (plus de 50 templates et plus de 40 index par exemple) et que sur vos nœuds la Heap disponible pour ElasticSearch est plutôt faible : l'affichage de cet écran déclenche un parsing dans Elasticsearch de tous les mappings de tous les index. Cette requête peut utiliser jusqu'à 2Go de mémoire dans ElasticSearch avec ~2000 mappings, et provoquer la mort du cluster si la mémoire disponible est insuffisante ! Cette anomalie est en cours de correction côté ElasticSearch comme côté Kibana...</div>
+                <div class="alert alert-warning" role="alert">Attention si votre cluster ElasticSearch contient un grand nombre de templates utilisés dans tous vos index (plus de 50 templates et plus de 40 index par exemple) et que sur vos nœuds la Heap disponible pour ElasticSearch est plutôt faible : l'affichage de cet écran déclenche un parsing dans Elasticsearch de tous les mappings de tous les index. Cette requête peut utiliser jusqu'à 2Go de mémoire dans ElasticSearch avec ~2000 mappings, et provoquer la mort du cluster si la mémoire disponible est insuffisante ! Cette anomalie est en cours de correction côté ElasticSearch comme côté Kibana...</div>
       </div>
 <p>
 Nous souhaitons traiter des données basées sur le temps (<em>time-based events</em>), situés dans des index (un seul index en fait) dont le nom commence par <code>logstash-*</code> et dont le champ normalisé contenant le timestamp est <code>@timestamp</code> (rappelez vous précédemment, nous avions configuré tout le nécessaire dans Logstash pour que ce champ soit correctement positionné).
@@ -939,7 +939,7 @@ Créez un nouveau Dashboard comme indiqué en choisissant différentes recherche
 Un exemple d'un dashboard affichant la répartition des codes retour par valeur, la répartition des timestamp par minute et la répartition de la taille des réponses regroupées par 10k bytes :
 <img src="./images/kibana_dashboard.png" />
 </p>
-				<div class="alert alert-warning" role="alert">
+                <div class="alert alert-warning" role="alert">
 <p>Les visualisations, et a fortiori les dashboards, utilisent une fonctionnalité d'ElasticSearch nommé Agrégations. Cela permet de réaliser en une seule requête, et en profitant des performances et de la distribution des recherches, d'obtenir à la fois les documents correspondant à la recherche et un certain nombre de valeurs calculées à partir du contenu de ces documents : nombre d'occurrence de chaque valeur différente, répartition des valeurs dans le temps, etc.
 </p>
 <p>
@@ -947,12 +947,12 @@ Cette fonctionnalité est très efficace et très pratique dans de nombreux cas,
 </p>
 </div>
   
-				<div class="alert alert-success" role="alert">Vous voilà arrivés à la fin du tutoriel. Vous pouvez continuer à lire pour aller plus loin...</div>
+                <div class="alert alert-success" role="alert">Vous voilà arrivés à la fin du tutoriel. Vous pouvez continuer à lire pour aller plus loin...</div>
 
-				<h2 id="further">Pour aller plus loin...</h2>
+                <h2 id="further">Pour aller plus loin...</h2>
 Nous avons vu une infrastructure simple d'exploitation de logs. Elle souffre de nombreux points faibles : goulets d'étranglements de performances, vulnérabilité aux pannes, impact sur la charge des machines monitorées... Ces points peuvent être résolus par l'ajout de nouvelles briques et l'utilisation de clusters.
 
-				<h3 id="rspec">Tests unitaires de LogStash</h3>
+                <h3 id="rspec">Tests unitaires de LogStash</h3>
 <p>
 L'écriture d'une configuration LogStash peut être très complexe : patterns GROK, utilisation de conditions sur des champs pour appliquer des opérations particulières, transformations de valeurs de champs... 
 </p>
@@ -960,12 +960,12 @@ L'écriture d'une configuration LogStash peut être très complexe : patterns GR
 Pour fiabiliser cela, LogStash fourni un outil de tests unitaires, qui permet de contrôler qu'une entrée a bien été transformée comme prévu...
 </p>
 
-				<div class="alert alert-danger" role="alert">
-					TODO
-				</div>
+                <div class="alert alert-danger" role="alert">
+                    TODO
+                </div>
 
-				
-				<h3 id="broker">Utilisation d'un agent et d'un broker de messages</h3>
+                
+                <h3 id="broker">Utilisation d'un agent et d'un broker de messages</h3>
 
 <p>Deux problèmes principaux sont présents dans l'architecture telle que mise en place dans ce tutoriel : le traitement des messages avec Grok peut être très gourmand en CPU, et le fait de pousser directement dans ElasticSearch implique un couplage fort entre les deux briques. 
 </p>
@@ -1018,7 +1018,7 @@ Le LogStash agent déposera les logs grâce au plugin <a href="https://www.elast
 </p>
 
 
-				<h3 id="cluster">Clustering</h3>
+                <h3 id="cluster">Clustering</h3>
 <p>
 Telle qu'elle, l'application n'est pas tolérante aux pannes : si ElasticSearch s'arrête, toute la chaîne devient indisponible. Pour un usage en production, la haute disponibilité, la tolérance aux pannes et la montée en charge par du scaling horizontal peuvent être nécessaires.
 </p>
@@ -1031,20 +1031,23 @@ Réaliser la même chose au niveau d'ElasticSearch n'est guère plus complexe : 
 <p>
 Dans cette partie, vous pouvez donc :
 <ol>
-<li>Dupliquer le fichier de configuration <code>elasticsearch.yml</code>, et modifier les ports d'écoute pour pouvoir le lancer sur la même machine que le premier nœud.
-<div class="alert alert-danger" role="alert">
-					TODO
-				</div>
+<li>
+    Démarrer un second noeud ElasticSearch en conservant les paramètres par défaut et en utilisant le même fichier de configuration : <code>$MY_DIR/elasticsearch-2.1.0/bin/elasticsearch</code>
 </li>
-<li>Configurer dans ce même fichier le premier nœud comme autre membre du cluster pour qu'ils se découvrent :
-				<div class="alert alert-danger" role="alert">
-					TODO
-				</div>
-</li>
-<li>Démarrer ce second nœud avec le nouveau fichier de configuration, et observer le résultat dans l'IHM Head d'ElasticSearch, sur le premier ou le second nœud (les mêmes données sont affichées) : <a href="https://localhost:9200/">https://localhost:9200/</a>
+<li>Observer le résultat dans l'IHM Head d'ElasticSearch : <a href="http://localhost:9200/">http://localhost:9200/</a>< br/>
+    <img src="./images/es_cluster.png" />
 </li>
 </ol>
 </p>
+<div class="alert alert-warning" role="alert">
+    <p>
+        <strong>Quelques explications...</strong>
+    </p>
+    <p>
+        En conservant un fichier de configuration <code>$MY_DIR/elasticsearch-2.1.0/config/elasticsearch.yml</code> par défaut, à chaque démarrage ElasticSearch prend un nom de noeud au hasard, et le premier port disponible à partir de 9200 pour l'API HTTP et 9300 pour sa communication interne. Cela permet de démarrer rapidement, mais fonctionner avec des paramètres par défaut et faire fonctionner 2 noeuds sur la même machine est déconseillé en production : difficulté d'exploitation, perte de la tolérance aux pannes, mutualisation préjudiciable des ressources...
+    </p>
+
+</div>
 
 <div class="alert alert-info" role="alert">Pour éviter les points uniques de défaillance (SPOF, Single Point of Failure) si à l'étape précédente on a mis en place RabbitMQ entre un LogStash agent et un serveur, il faudra également le mettre en cluster. Cela sort du cadre de ce Hands on, mais toute la documentation est disponible <a href="https://www.rabbitmq.com/clustering.html">sur le site du produit</a>.
 </div>
@@ -1055,15 +1058,15 @@ Dans cette partie, vous pouvez donc :
 
     </div><!-- /.container -->
 
-		<footer class="footer" role="contentinfo">
+        <footer class="footer" role="contentinfo">
       <div class="container">
         <ul class="footer-links text-center">
-					<li><a href="http://www.duchess-france.org/"><img src="images/duchess.jpg" heigth="32px" width="32px" /></a></li>
-      		<li>&middot;</li>
-					<li><a href="https://twitter.com/leneurone_eu"><img src="images/twitter.png" /></a></li>
-      		<li>&middot;</li>
-					<li><a href="https://github.com/leneurone/atelier-duchess-elk"><img src="images/github.png" /></a></li>
-				</ul>
+                    <li><a href="http://www.duchess-france.org/"><img src="images/duchess.jpg" heigth="32px" width="32px" /></a></li>
+            <li>&middot;</li>
+                    <li><a href="https://twitter.com/leneurone_eu"><img src="images/twitter.png" /></a></li>
+            <li>&middot;</li>
+                    <li><a href="https://github.com/leneurone/atelier-duchess-elk"><img src="images/github.png" /></a></li>
+                </ul>
       </div>
     </footer> <!-- footer -->
 
