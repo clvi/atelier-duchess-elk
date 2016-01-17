@@ -27,29 +27,15 @@
           <h1> Hands On : LogStash, ElasticSearch, Kibana, et plus encore </h1>
           <p class="lead">Ce tutoriel détaillera pas à pas : 
             <ul>
-              <li>L'installation locale de LogStash, ElasticSearch et Kibana</li>
-              <li>Le traitement de fichiers de logs par LogStash</li>
-              <li>L'indexation dans ElasticSearch</li>
-              <li>L'exploitation des données via Kibana</li>
-              <li>Et pour aller plus loin : l'utilisation d'un broker de messages et d'agents distants, la mise en cluster d'ElasticSearch, ...</li>
+              <li><a href="#install">L'installation locale de LogStash, ElasticSearch et Kibana</a></li>
+              <li><a href="#logstash">Le traitement de fichiers de logs par LogStash</a></li>
+              <li><a href="#es">L'indexation dans ElasticSearch</a></li>
+              <li><a href="#kibana">L'exploitation des données via Kibana</a></li>
+              <li>Et pour aller plus loin : <a href="#broker">l'utilisation d'un broker de messages et d'agents distants</a> et <a href="#cluster">la mise en cluster d'ElasticSearch</a></li>
             </ul>
           </p>
           <div class="alert alert-warning" role="alert">
             Dans le but d'éviter les incidents de démarrage lors de l'atelier, merci de suivre la partie "Pré-requis et installation" avant l'atelier, depuis un ordinateur connecté à Internet !
-          </div>
-          <div>
-            <ul>
-              <li><a href="#install">Pré-requis et installation</a></li>
-              <li><a href="#logstash">Étape 1 : LogStash</a></li>
-              <li><a href="#es">Étape 2 : ElasticSearch</a></li>
-              <li><a href="#kibana">Étape 3 : Kibana</a></li>
-              <li><a href="#further">Pour aller plus loin...</a>
-                <ul>
-                  <li><a href="#broker">Utilisation d'un agent et d'un broker de messages</a>
-                  <li><a href="#cluster">Clustering</a></li>
-                </ul>
-              </li>
-            </ul>
           </div>
         </div>
         <h2 id="install">Pré-requis et installation</h2>
@@ -67,59 +53,74 @@ L'utilisation de la machine virtuelle demande au minimum un ordinateur avec un C
 Pour tous les logiciels qui ne seront pas installés sous forme de package, nous allons placer les binaires dans un même dossier. Tous les chemins seront relatifs à ce dossier, par exemple pour Linux : <code>/home/cvillard/elk</code>. Il y sera fait référence via la variable : <code>$MY_DIR</code>.
         </p>
         <h4>Java 8</h4>
-        <p><strong>Linux (Ubuntu)</strong></p>
-        <p>
-        Contrôler la version de Java installée : 
+        <div class="panel panel-default">
+          <!-- Table -->
+          <table class="table table-bordered">
+            <tr>
+              <th>Linux (Ubuntu)</th>
+              <th>Windows</th>
+            </tr>
+            <tr>
+              <td>
+                <p>
+                  Contrôler la version de Java installée : 
 <pre>
 $ java -version
 openjdk version "1.8.0_66-internal"
-OpenJDK Runtime Environment (build 1.8.0_66-internal-b17)
-OpenJDK 64-Bit Server VM (build 25.66-b17, mixed mode)
 </pre>
-        Si la version est inférieure à 1.8 ou si la commande est inconnue, installer l'openJDK 8 :
+                  Si la version est inférieure à 1.8 ou si la commande est inconnue, installer l'openJDK 8 :
 <pre>
 $ sudo aptitude install openjdk-8-jdk
 </pre>
-        Vérifier que l'installation s'est bien passée en reprenant la commande de vérification.
-        </p>
-        <p><strong>Windows</strong></p>
-        <p>
-        Contrôler la version de Java installée : 
+                </p>
+              </td>
+              <td>
+                <p>
+                  Contrôler la version de Java installée : 
 <pre>
 > java -version
 java version "1.8.0_66"
-Java(TM) SE Runtime Environment (build 1.8.0_66-b18)
-Java HotSpot(TM) Client VM (build 25.66-b18, mixed mode, sharing)
 </pre>
-        Si la version est inférieure à 1.8, télécharger l'installeur pour Windows 64 bits à cette adresse : <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</a>. 
-        </p>
+                  Si la version est inférieure à 1.8, <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">télécharger l'installeur pour Windows 64 bits à cette adresse</a>. 
+                </p>
+                <p>
+                  Lancer l'installation en conservant les options par défaut.
+                </p>
+                <p>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
         <p>
-        Lancer l'installation en conservant les options par défaut.
-        </p>
-        <p>
-        Vérifier que l'installation s'est bien passée en reprenant la commande de vérification.
+          Vérifier que l'installation s'est bien passée en reprenant la commande de vérification. 
         </p>
 
         <h4>LogStash</h4>
         <p>Nous utiliserons la version 2.1.0 de LogStash. </p>
-        <p>Télécharger le ZIP ou le TAR.GZ de la version 2.1.0 à cette adresse : <a href="https://www.elastic.co/downloads/logstash">https://www.elastic.co/downloads/logstash</a>.</p>
-        <p>Décompresser l'archive dans <code>$MY_DIR</code>. </p>
-          <p>Tester que LogStash se lance bien avec la commande : 
+        <ul>
+          <li>
+            Télécharger le ZIP ou le TAR.GZ de la version 2.1.0 à cette adresse : <a href="https://www.elastic.co/downloads/logstash">https://www.elastic.co/downloads/logstash</a>.</li>
+          <li>Décompresser l'archive dans <code>$MY_DIR</code>. </li>
+          <li>Tester que LogStash se lance bien avec la commande : 
 <pre>
 $ ./logstash-2.1.0/bin/logstash version
 logstash 2.1.0
 </pre>
-        </p>
+          </li>
+        </ul>
 
         <h4>ElasticSearch</h4>
         <p>Nous utiliserons la version 2.1.0 d'ElasticSearch. </p>
-        <p>Télécharger le ZIP ou le TAR de la version 2.1.0 à cette adresse : <a href="https://www.elastic.co/downloads/elasticsearch">https://www.elastic.co/downloads/elasticsearch</a>.</p> 
-        <p>Décompresser l'archive dans <code>$MY_DIR</code>.</p> 
-        <p>Tester qu'ElasticSearch se lance bien avec la commande : 
+        <ul>
+          <li>Télécharger le ZIP ou le TAR de la version 2.1.0 à cette adresse : <a href="https://www.elastic.co/downloads/elasticsearch">https://www.elastic.co/downloads/elasticsearch</a>.</li> 
+          <li>Décompresser l'archive dans <code>$MY_DIR</code>.</li> 
+          <li>Démarrer ElasticSearch avec la commande : 
 <pre>
 $ ./elasticsearch-2.1.0/bin/elasticsearch
 </pre>
-        Une fois la trace suivante reçue dans la console (<code>Kirigi</code> étant le nom du nœud, il change à chaque démarrage) : 
+          </li>
+          <li>Une fois la trace suivante reçue dans la console (<code>Kirigi</code> étant le nom du nœud, il change à chaque démarrage) : 
 <pre>
 [2015-11-28 14:03:28,178][INFO ][node                     ] [Kirigi] started
 </pre>
@@ -138,107 +139,96 @@ $ ./elasticsearch-2.1.0/bin/elasticsearch
   "tagline" : "You Know, for Search"
 }
 </pre>
-        </p>
+          </li>
+        </ul>
 
         <h4>cURL</h4>
         <p>
         cURL est utile pour soumettre des requêtes à ElasticSearch.
         </p>
-        <p><strong>Linux (Ubuntu)</strong></p>
-        <p>
+        <div class="panel panel-default">
+          <!-- Table -->
+          <table class="table table-bordered">
+            <tr>
+              <th>Linux (Ubuntu)</th>
+              <th>Windows</th>
+            </tr>
+            <tr>
+              <td>
+                <p>
 <pre>
 $ sudo aptitude install curl
 </pre>
-        </p>
-
-        <p><strong>Windows</strong></p>
-        <p>
-        Télécharger le ZIP à cette adresse : <a href="http://curl.haxx.se/download.html">http://curl.haxx.se/download.html</a>. L'extraire dans un répertoire sur le disque. Il contient directement l'exécutable, sans installation.
-        </p>
+                </p>
+              </td>
+              <td>
+                <p>
+                  Télécharger le ZIP à cette adresse : <a href="http://curl.haxx.se/download.html">http://curl.haxx.se/download.html</a>. L'extraire dans un répertoire sur le disque. Il contient directement l'exécutable, sans installation.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
 
         <h4>Kibana</h4>
         <p>La version de Kibana compatible avec ElasticSearch 2.1.x est la version 4.3.0. </p>
-        <p>Télécharger la version correspondant à votre système à l'adresse: <a href="https://www.elastic.co/downloads/kibana">https://www.elastic.co/downloads/kibana</a>. </p>
-        <p>Décompresser l'archive dans <code>$MY_DIR</code>. </p>
-        <p>Lancer Kibana avec la commande :
+        <ul>
+          <li>Télécharger la version correspondant à votre système à l'adresse: <a href="https://www.elastic.co/downloads/kibana">https://www.elastic.co/downloads/kibana</a>. </li>
+          <li>Décompresser l'archive dans <code>$MY_DIR</code>. </li>
+          <li>Lancer Kibana avec la commande :
 <pre>
 $ ./kibana-4.3.0-linux-x64/bin/kibana
 </pre>
-          Une fois la trace suivante obtenue dans la console :
+          </li>
+          <li>Une fois la trace suivante obtenue dans la console :
 <pre>
   log   [14:11:46.405] [info][listening] Server running at http://0.0.0.0:5601
 </pre>
-        Vérifier que Kibana répond à l'URL <a href="http://localhost:5601/">http://localhost:5601/</a>. On ne va rien configurer pour l'instant, cela fera partie de la suite du tutoriel.
-        </p>
+          Vérifier que Kibana répond à l'URL <a href="http://localhost:5601/">http://localhost:5601/</a>. On ne va rien configurer pour l'instant, cela fera partie de la suite du tutoriel.
+          </li>
+        </ul>
 
         <h4>RabbitMQ</h4>
         <p>Erlang est nécessaire au fonctionnement de RabbitMQ.
         </p>
-        <p><strong>Windows</strong></p>
-        <p>
-        Télécharger le package Erlang pour Windows 64 bits à l'adresse : <a href="http://www.erlang.org/download.html">http://www.erlang.org/download.html</a>.
-        </p>
-        <p>Exécuter l'installeur pour Windows en conservant les options par défaut. </p>
-
-        <p>Télécharger l'installeur Windows à l'adresse <a href="https://www.rabbitmq.com/download.html">https://www.rabbitmq.com/download.html</a>. 
-        </p>
-        <p>Exécuter l'installeur pour Windows en conservant les options par défaut. </p>
-
-        <p><strong>Linux</strong></p>
-
-        <p>Pour Ubuntu, installer le package fourni dans les dépots, il contient toutes les dépendances nécessaires :
+        <div class="panel panel-default">
+          <!-- Table -->
+          <table class="table table-bordered">
+            <tr>
+              <th>Linux (Ubuntu)</th>
+              <th>Windows</th>
+            </tr>
+            <tr>
+              <td>
+                <p>Pour Ubuntu, installer le package fourni dans les dépots, il contient toutes les dépendances nécessaires :
 <pre>
 $ sudo aptitude install rabbitmq-server
 </pre>
-        L'installation du paquet déclenche le démarrage du serveur. Contrôler cela via la commande :
+                  L'installation du paquet déclenche le démarrage du serveur. Contrôler cela via la commande :
 <pre>
 $ sudo rabbitmqctl status
 Status of node 'rabbit@claire-i5' ...
 [{pid,16510},
- {running_applications,[{rabbit,"RabbitMQ","3.5.4"},
-                        {mnesia,"MNESIA  CXC 138 12","4.13"},
-                        {os_mon,"CPO  CXC 138 46","2.4"},
-                        {xmerl,"XML parser","1.3.8"},
-                        {sasl,"SASL  CXC 138 11","2.5"},
-                        {stdlib,"ERTS  CXC 138 10","2.5"},
-                        {kernel,"ERTS  CXC 138 10","4.0"}]},
- {os,{unix,linux}},
- {erlang_version,"Erlang/OTP 18 [erts-7.0] [source] [64-bit] [smp:4:4] [async-threads:64] [kernel-poll:true]\n"},
- {memory,[{total,42831280},
-          {connection_readers,0},
-          {connection_writers,0},
-          {connection_channels,0},
-          {connection_other,2712},
-          {queue_procs,2712},
-          {queue_slave_procs,0},
-          {plugins,0},
-          {other_proc,13403656},
-          {mnesia,61024},
-          {mgmt_db,0},
-          {msg_index,46816},
-          {other_ets,761048},
-          {binary,13248},
-          {code,16907095},
-          {atom,654217},
-          {other_system,10978752}]},
- {alarms,[]},
- {listeners,[{clustering,25672,"::"},{amqp,5672,"::"}]},
- {vm_memory_high_watermark,0.4},
- {vm_memory_limit,3341025280},
- {disk_free_limit,50000000},
- {disk_free,51512127488},
- {file_descriptors,[{total_limit,65436},
-                    {total_used,3},
-                    {sockets_limit,58890},
-                    {sockets_used,1}]},
- {processes,[{limit,1048576},{used,126}]},
- {run_queue,0},
+...
  {uptime,248}]
-
 </pre>
-        </p>
-        <p>Pour les autres distributions, se reporter à la <a href="https://www.rabbitmq.com/download.html">documentation de l'outil</a> (peut nécessiter de compiler Erlang).
-        </p>
+                </p>
+                <p>Pour les autres distributions, se reporter à la <a href="https://www.rabbitmq.com/download.html">documentation de l'outil</a> (peut nécessiter de compiler Erlang).
+                </p>
+              </td>
+              <td>
+                <p>
+                  Télécharger le package Erlang pour Windows 64 bits à l'adresse : <a href="http://www.erlang.org/download.html">http://www.erlang.org/download.html</a>.
+                </p>
+                <p>Exécuter l'installeur pour Windows en conservant les options par défaut. </p>
+
+                <p>Télécharger l'installeur de RabbitMQ pour Windows à l'adresse <a href="https://www.rabbitmq.com/download.html">https://www.rabbitmq.com/download.html</a>. 
+                </p>
+                <p>Exécuter l'installeur pour Windows en conservant les options par défaut. </p>
+              </td>
+            </tr>
+          </table>
+        </div>
 
         <h2 id="logstash">Étape 1 : LogStash</h2>
         <p>
