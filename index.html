@@ -120,10 +120,32 @@ java version "1.8.0_66"
             Télécharger le ZIP ou le TAR.GZ de la version 2.1.0 à cette adresse : <a href="https://www.elastic.co/downloads/logstash">https://www.elastic.co/downloads/logstash</a>.</li>
           <li>Décompresser l'archive dans <code>$MY_DIR</code>. </li>
           <li>Tester que LogStash se lance bien avec la commande : 
+            <div class="panel panel-default">
+              <!-- Table -->
+              <table class="table table-bordered">
+                <tr>
+                  <th>Linux (Ubuntu)</th>
+                  <th>Windows</th>
+                </tr>
+                <tr>
+                  <td>
 <pre>
 $ ./logstash-2.1.0/bin/logstash version
 logstash 2.1.0
 </pre>
+                  </td>
+                  <td>
+<pre>
+$ .\logstash-2.1.0\bin\logstash version
+logstash 2.1.0
+</pre>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </li>
+          <li>
+            Si une erreur de la forme <code>JAVA_HOME environment variable must be set!</code> apparaît, ajouter la variable d'environnement système nommée <code>JAVA_HOME</code> en la faisant pointer vers le répertoire d'installation du JDK (sous Windows avec les paramètres par défaut : <code>C:\Program Files\Java\jdk1.8.0_66</code>).
           </li>
         </ul>
 
@@ -142,10 +164,29 @@ Verifying https://github.com/mobz/elasticsearch-head/archive/master.zip checksum
 NOTE: Unable to verify checksum for downloaded plugin (unable to find .sha1 or .md5 file to verify)
 Installed head into /$MY_DIR/elasticsearch-2.1.0/plugins/head
 </pre>
+          </li>
           <li>Démarrer ElasticSearch avec la commande : 
+            <div class="panel panel-default">
+              <!-- Table -->
+              <table class="table table-bordered">
+                <tr>
+                  <th>Linux (Ubuntu)</th>
+                  <th>Windows</th>
+                </tr>
+                <tr>
+                  <td>
 <pre>
 $ ./elasticsearch-2.1.0/bin/elasticsearch
 </pre>
+                  </td>
+                  <td>
+<pre>
+$ .\elasticsearch-2.1.0\bin\elasticsearch
+</pre>
+                  </td>
+                </tr>
+              </table>
+            </div>
           </li>
           <li>Une fois la trace suivante reçue dans la console (<code>Kirigi</code> étant le nom du nœud, il change à chaque démarrage) : 
 <pre>
@@ -190,7 +231,7 @@ $ sudo apt-get install curl
               </td>
               <td>
                 <p>
-                  Télécharger le ZIP à cette adresse : <a href="http://curl.haxx.se/download.html">http://curl.haxx.se/download.html</a>. L'extraire dans un répertoire sur le disque. Il contient directement l'exécutable, sans installation.
+                  Télécharger le ZIP <a href="http://winampplugins.co.uk/curl/">à cette adresse</a>. L'extraire dans un répertoire sur le disque. Il contient directement l'exécutable, sans installation.
                 </p>
               </td>
             </tr>
@@ -203,15 +244,33 @@ $ sudo apt-get install curl
           <li>Télécharger la version correspondant à votre système à l'adresse: <a href="https://www.elastic.co/downloads/kibana">https://www.elastic.co/downloads/kibana</a>. </li>
           <li>Décompresser l'archive dans <code>$MY_DIR</code>. </li>
           <li>Lancer Kibana avec la commande :
+            <div class="panel panel-default">
+              <!-- Table -->
+              <table class="table table-bordered">
+                <tr>
+                  <th>Linux (Ubuntu)</th>
+                  <th>Windows</th>
+                </tr>
+                <tr>
+                  <td>
 <pre>
 $ ./kibana-4.3.0-linux-x64/bin/kibana
 </pre>
+                  </td>
+                  <td>
+<pre>
+$ kibana-4.3.0-windows\bin\kibana
+</pre>
+                  </td>
+                </tr>
+              </table>
+            </div>
           </li>
           <li>Une fois la trace suivante obtenue dans la console :
 <pre>
   log   [14:11:46.405] [info][listening] Server running at http://0.0.0.0:5601
 </pre>
-          Vérifier que Kibana répond à l'URL <a href="http://localhost:5601/">http://localhost:5601/</a>. On ne va rien configurer pour l'instant, cela fera partie de la suite du tutoriel.
+              Vérifier que Kibana répond à l'URL <a href="http://localhost:5601/">http://localhost:5601/</a>. On ne va rien configurer pour l'instant, cela fera partie de la suite du tutoriel.
           </li>
         </ul>
 
@@ -247,11 +306,21 @@ Status of node 'rabbit@claire-i5' ...
                 <p>
                   Télécharger le package Erlang pour Windows 64 bits à l'adresse : <a href="http://www.erlang.org/download.html">http://www.erlang.org/download.html</a>.
                 </p>
-                <p>Exécuter l'installeur pour Windows en conservant les options par défaut. </p>
+                <p>Exécuter l'installeur pour Windows en Administrateur en conservant les options par défaut. </p>
 
                 <p>Télécharger l'installeur de RabbitMQ pour Windows à l'adresse <a href="https://www.rabbitmq.com/download.html">https://www.rabbitmq.com/download.html</a>. 
                 </p>
                 <p>Exécuter l'installeur pour Windows en conservant les options par défaut. </p>
+                <p>
+                  Une fois l'installation terminée, ouvrir le prompt RabbitMQ via <code>Menu Démarrer > Tous les programmes > RabbitMQ Server > RabbitMQ Command Prompt (sbin dir)</code>. Dans l'invite de commande qui s'ouvre, taper la commande :
+<pre>
+> rabbitmqctl.bat status
+Status of node 'rabbit@ITEM-87177' ...
+[{pid,6672},
+...
+ {uptime,62}]
+</pre>
+                </p>
               </td>
             </tr>
           </table>
