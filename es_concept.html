@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <title>Hands On : ELK</title>
+
+  <!-- Bootstrap -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- home made custom CSS -->
+  <link href="css/tuto.css" rel="stylesheet">
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+  </head>
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <a class="navbar-brand" href="./index.html#es">Tutoriel</a>
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="./es_concept.html">Concepts ElasticSearch</a></li>
+            <li><a href="./novm.html">Installation sans VM</a></li>
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
+
+    <div class="container">
+      <div>
+        <h1> Hands On : LogStash, ElasticSearch, Kibana, et plus encore </h1>
+        <p class="lead">Explication de quelques concepts spécifiques à ElasticSearch.
+        </p>
+      </div>
+      <h2>Stockage interne des données</h2>
+      <h3>Index</h3>
+      <div class="alert alert-danger" role="alert">
+        TODO
+      </div>
+      <h3>Document</h3>
+      <p>
+        Un <em>document</em> désigne une donnée indexée dans ElasticSearch. Cette donnée a un <em>type</em> qui défini les champs qu'elle contient et la manière dont il est indexé. Lorsqu'on fait une recherche dans ElasticSearch, chaque résultat retourné par la recherche est un document.
+      </p>
+      <p>
+        Dans notre cas, un document est donc une ligne de logs Apache.
+      </p>
+      <h3>Shards</h3>
+      <p>
+        Un <em>shard</em> est une portion d'index, qui contient des données. La répartition des données entre les différents index est décidée par l'utilisateur, qui indique dans sa requête le nom de l'index ciblé. LogStash a fait ce travail à notre place en indiquant à ElasticSearch le nom d'index commençant par <code>logstash-</code> et terminant par le jour du log à indexer. 
+      </p>
+      <p>
+        Lorsqu'il reçoit des documents à indexer dans un index donné, ElasticSearch les dispatche de manière homogène entre différents <em>shards</em>. Par défaut, chaque index possède 5 <em>shards</em> mais il est possible de configurer cette valeur en fonction du nombre de nœuds dans le cluster ElasticSearch, de la volumétrie de données et des requêtes réalisées. Chaque <em>shard</em> porte donc une partie des données de l'index, 20% dans notre cas puisque l'index possède 5 <em>shards</em>. Ce sont ces <em>shards</em> qu'ElasticSearch va ensuite automatiquement répartir entre les nœuds du cluster, ainsi que leurs répliques (1 par défaut) pour assurer à la fois la scalabilité, les performances, et la tolérance aux pannes.
+      </p>
+
+      <h3>Mappings et templates</h3>
+      <div class="alert alert-danger" role="alert">
+        TODO
+      </div>
+
+      <h2>Explication du résultat d'une requête</h2>
+
+      <div class="alert alert-danger" role="alert">
+        TODO
+      </div>
+      <p>
+        <span class="glyphicon glyphicon-hand-right" ></span>
+        Entrez dans votre navigateur l'URL suivante : <a href="http://localhost:9200/logstash-2015.01.04/_search" >http://localhost:9200/logstash-2015.01.04/_search</a>. Le résultat devrait être (une fois mis en forme) :
+<pre>
+{
+"took":226,
+"timed_out":false,
+"_shards":{"total":5,"successful":5,"failed":0},
+"hits":{
+  "total":1,
+  "max_score":1.0,
+  "hits":[
+    {
+      "_index":"logstash-2015.01.04",
+      "_type":"logs",
+      "_id":"AVF4U1CkEZ3y1kCGmOik",
+      "_score":1.0,
+      "_source":{
+        "message":"83.149.9.216 - - [04/Jan/2015:05:13:42 +0000] \"GET /presentations/logstash-monitorama-2013/images/kibana-search.png HTTP/1.1\" 200 203023 \"http://semicomplete.com/presentations/logstash-monitorama-2013/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\"",
+        "@version":"1",
+        "@timestamp":"2015-01-04T05:13:42.000Z",
+        "host":"claire-i5",
+        "path":"/home/claire/Documents/atelier_es_mydir/logstash-tutorial-small.log",
+        "clientip":"83.149.9.216",
+        "ident":"-",
+        "auth":"-",
+        "timestamp":"04/Jan/2015:05:13:42 +0000",
+        "verb":"GET",
+        "request":"/presentations/logstash-monitorama-2013/images/kibana-search.png",
+        "httpversion":"1.1",
+        "response":"200",
+        "bytes":"203023",
+        "referrer":"\"http://semicomplete.com/presentations/logstash-monitorama-2013/\"",
+        "agent":"\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\""
+      }
+    }
+  ]
+}
+}
+</pre>
+        </p>
+        <p>
+          Nous allons détailler un peu ce résultat et en profiter pour expliquer quelques notions du fonctionnement interne d'ElasticSearch.
+        </p>
+        <p>
+          Le début indique que la requête a pris 226ms et qu'elle n'a pas déclenché de timeout :
+<pre>
+"took":226,
+"timed_out":false,
+</pre>
+        </p>
+        <p>
+          La suite indique que la requête a été faite sur 5 <em>shards</em> et qu'aucun d'eux n'a déclenché d'erreur.
+<pre>
+"_shards":{"total":5,"successful":5,"failed":0},
+</pre>
+        </p>
+
+        <p>
+          Enfin, viennent les <em>hits</em>, donc les documents qui correspondaient à la recherche effectuée. Dans notre cas, nous n'avons précisé aucun critère donc la totalité des documents (1) a été retournée.
+        </p>
+        <p>
+          On retrouve ainsi le nombre total de résultats (1), et le <code>max_score</code> qui indique à quel point le document considéré comme le plus pertinent par rapport à la recherche, est pertinent.
+<pre>
+"total":1,
+"max_score":1.0,
+</pre>
+          Le fonctionnement du scoring est assez complexe, nous n'allons donc pas nous attarder dessus dans ce tutoriel. Il faut cependant savoir que c'est le critère de tri par défaut des résultats (du plus pertinent au moins pertinent). Cela étant assez peu intéressant pour consulter des logs (que nous préférons généralement triés par date, même quand nous cherchons une chaîne de caractères précise par exemple), nous préciserons donc souvent un autre critère de tri, notamment sur le champ <code>@timestamp</code> vu précédemment.
+        </p>
+        <p>
+          Viennent ensuite les résultats eux-même. Dans notre exemple, nous retrouvons bien la ligne de log découpée en champs nommés vue à l'étape 1. Un <em>hit</em> contient, en plus du contenu du document (la ligne de log) stocké dans le champ <code>_source</code>, d'autres champs correspondant à des metadata ajoutées ou calculées par ElasticSearch. 
+<pre>
+"_index":"logstash-2015.01.04",
+"_type":"logs",
+"_id":"AVF4U1CkEZ3y1kCGmOik",
+"_score":1.0,
+</pre>
+          On y retrouve le nom de l'index dans le champ <code>_index</code>, et le score par rapport à la recherche dans <code>_score</code>. Le champ <code>_id</code> contient quant à lui l'identifiant unique du document dans l'index, ce qui permet d'y accéder ensuite directement. Il peut être imposé par le client lors de l'envoi des documents à indexer, ou plus fréquemment il n'est pas précisé et comme ici ElasticSearch le génère.
+        </p>
+        <p>
+          Enfin, on trouve le champ <code>_type</code>, positionné à la valeur <code>logs</code>. Ici encore, LogStash nous a mâché le travail et à indiqué à ElasticSearch que le document qu'il lui envoyait était de type <code>logs</code>. Cela a une grande importance, car c'est sur ce type qu'ElasticSearch va se baser pour savoir quels champs il peut s'attendre à trouver dans le document, et comment il va devoir les indexer : chaînes de caractères ? entiers ? date ? indexés en texte brut ou découpés selon des caractères de séparation ? etc.
+        </p>
+
+
+    </div><!-- /.container -->
+
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <ul class="footer-links text-center">
+          <li><a href="http://www.duchess-france.org/"><img src="images/duchess.jpg" heigth="32px" width="32px" /></a></li>
+          <li>&middot;</li>
+          <li><a href="https://twitter.com/leneurone_eu"><img src="images/twitter.png" /></a></li>
+          <li>&middot;</li>
+          <li><a href="https://github.com/leneurone/atelier-duchess-elk"><img src="images/github.png" /></a></li>
+        </ul>
+      </div>
+    </footer> <!-- footer -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>

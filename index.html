@@ -27,6 +27,7 @@
           <div class="navbar-header">
             <a class="navbar-brand" href="./index.html">Tutoriel</a>
             <ul class="nav navbar-nav">
+              <li><a href="./es_concept.html">Concepts ElasticSearch</a></li>
               <li><a href="./novm.html">Installation sans VM</a></li>
             </ul>
           </div><!-- /.navbar-collapse -->
@@ -351,7 +352,10 @@ Logstash shutdown completed
 
         <h2 id="es">Étape 2 : ElasticSearch</h2>
         <p>
-        Dans cette étape, nous allons utiliser le résultat de l'étape précédente pour indexer les logs découpés dans ElasticSearch et les rechercher sommairement via l'API REST d'ElasticSearch. Nous apprendrons également comme configurer sommairement ElasticSearch et comment le monitorer via un plugin.
+          Dans cette étape, nous allons utiliser le résultat de l'étape précédente pour indexer les logs découpés dans ElasticSearch et les rechercher sommairement via l'API REST d'ElasticSearch. Nous apprendrons également comme configurer sommairement ElasticSearch et comment le monitorer via un plugin.
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span> Le fonctionnement d'ElasticSearch étant assez particulier, il est fortement conseillé de lire la page <a href="./es_concept.html">Concepts ElasticSearch</a> de ce tutoriel avant de continuer !
         </p>
         <p>
           <span class="glyphicon glyphicon-hand-right" ></span> Démarrer ElasticSearch avec la commande : 
@@ -444,49 +448,16 @@ output {
 }
 </pre>
         </p>
+        <div class="alert alert-info" role="alert">
+          Pour plus de détails sur le contenu de cette réponse, vous pouvez vous reporter à son explication sur la page <a href="./es_concept.html">Concepts ElasticSearch</a>.
+        </div>
         <p>
-        Nous allons détailler un peu ce résultat et en profiter pour expliquer quelques notions du fonctionnement interne d'ElasticSearch.
-        </p>
-        <p>
-        Le début indique que la requête a pris 226ms et qu'elle n'a pas déclenché de timeout :
+          Dans la réponse retournée, on voit que la donnée est de type <code>logs</code> :
 <pre>
-"took":226,
-"timed_out":false,
+  ...
+  "_type":"logs",
+  ...
 </pre>
-        </p>
-        <p>
-        La suite indique que la requête a été faite sur 5 <em>shards</em> et qu'aucun d'eux n'a déclenché d'erreur.
-<pre>
-"_shards":{"total":5,"successful":5,"failed":0},
-</pre>
-        Un <em>shard</em> est une portion d'index, qui contient des données. La répartition des données entre les différents index est décidée par l'utilisateur, qui indique dans sa requête le nom de l'index ciblé. LogStash a fait ce travail à notre place en indiquant à ElasticSearch le nom d'index commençant par <code>logstash-</code> et terminant par le jour du log à indexer. 
-        </p>
-        <p>
-        Lorsqu'il reçoit des documents à indexer dans un index donné, ElasticSearch les dispatche de manière homogène entre différents <em>shards</em>. Par défaut, chaque index possède 5 <em>shards</em> mais il est possible de configurer cette valeur en fonction du nombre de nœuds dans le cluster ElasticSearch, de la volumétrie de données et des requêtes réalisées. Chaque <em>shard</em> porte donc une partie des données de l'index, 20% dans notre cas puisque l'index possède 5 <em>shards</em>. Ce sont ces <em>shards</em> qu'ElasticSearch va ensuite automatiquement répartir entre les nœuds du cluster, ainsi que leurs répliques (1 par défaut) pour assurer à la fois la scalabilité, les performances, et la tolérance aux pannes.
-        </p>
-        <p>
-        Enfin, viennent les <em>hits</em>, donc les documents qui correspondaient à la recherche effectuée. Dans notre cas, nous n'avons précisé aucun critère donc la totalité des documents (1) a été retournée.
-        </p>
-        <p>
-        On retrouve ainsi le nombre total de résultats (1), et le <code>max_score</code> qui indique à quel point le document considéré comme le plus pertinent par rapport à la recherche, est pertinent.
-<pre>
-"total":1,
-"max_score":1.0,
-</pre>
-        Le fonctionnement du scoring est assez complexe, nous n'allons donc pas nous attarder dessus dans ce tutoriel. Il faut cependant savoir que c'est le critère de tri par défaut des résultats (du plus pertinent au moins pertinent). Cela étant assez peu intéressant pour consulter des logs (que nous préférons généralement triés par date, même quand nous cherchons une chaîne de caractères précise par exemple), nous préciserons donc souvent un autre critère de tri, notamment sur le champ <code>@timestamp</code> vu précédemment.
-        </p>
-        <p>
-        Viennent ensuite les résultats eux-même. Dans notre exemple, nous retrouvons bien la ligne de log découpée en champs nommés vue à l'étape 1. Un <em>hit</em> contient, en plus du contenu du document (la ligne de log) stocké dans le champ <code>_source</code>, d'autres champs correspondant à des metadata ajoutées ou calculées par ElasticSearch. 
-<pre>
-"_index":"logstash-2015.01.04",
-"_type":"logs",
-"_id":"AVF4U1CkEZ3y1kCGmOik",
-"_score":1.0,
-</pre>
-        On y retrouve le nom de l'index dans le champ <code>_index</code>, et le score par rapport à la recherche dans <code>_score</code>. Le champ <code>_id</code> contient quant à lui l'identifiant unique du document dans l'index, ce qui permet d'y accéder ensuite directement. Il peut être imposé par le client lors de l'envoi des documents à indexer, ou plus fréquemment il n'est pas précisé et comme ici ElasticSearch le génère.
-        </p>
-        <p>
-        Enfin, on trouve le champ <code>_type</code>, positionné à la valeur <code>logs</code>. Ici encore, LogStash nous a mâché le travail et à indiqué à ElasticSearch que le document qu'il lui envoyait était de type <code>logs</code>. Cela a une grande importance, car c'est sur ce type qu'ElasticSearch va se baser pour savoir quels champs il peut s'attendre à trouver dans le document, et comment il va devoir les indexer : chaînes de caractères ? entiers ? date ? indexés en texte brut ou découpés selon des caractères de séparation ? etc.
         </p>
         <p>
         Si on relit de nouveau les traces produites par ElasticSearch lors de la réception du log, on voit que la seconde mentionne ce type <code>logs</code> :
