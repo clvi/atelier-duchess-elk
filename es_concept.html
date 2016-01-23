@@ -67,12 +67,8 @@
 
       <h2>Explication du résultat d'une requête</h2>
 
-      <div class="alert alert-danger" role="alert">
-        TODO
-      </div>
       <p>
-        <span class="glyphicon glyphicon-hand-right" ></span>
-        Entrez dans votre navigateur l'URL suivante : <a href="http://localhost:9200/logstash-2015.01.04/_search" >http://localhost:9200/logstash-2015.01.04/_search</a>. Le résultat devrait être (une fois mis en forme) :
+        Dans le cadre de ce tutorial, après avoir injecté un document dans ElasticSearch via LogStash, nous pouvons récupérer ce document en faisant une recherche sans aucun critère sur l'index <code>logstash-2015.01.04</code>. Cela se fait en entrant dans un navigateur l'URL suivante : <a href="http://localhost:9200/logstash-2015.01.04/_search" >http://localhost:9200/logstash-2015.01.04/_search</a>. Le résultat devrait être (une fois mis en forme) :
 <pre>
 {
 "took":226,
@@ -110,9 +106,6 @@
 }
 }
 </pre>
-        </p>
-        <p>
-          Nous allons détailler un peu ce résultat et en profiter pour expliquer quelques notions du fonctionnement interne d'ElasticSearch.
         </p>
         <p>
           Le début indique que la requête a pris 226ms et qu'elle n'a pas déclenché de timeout :
