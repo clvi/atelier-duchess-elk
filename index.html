@@ -21,6 +21,18 @@
     </head>
     <body>
 
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <a class="navbar-brand" href="./index.html">Tutoriel</a>
+            <ul class="nav navbar-nav">
+              <li><a href="./novm.html">Installation sans VM</a></li>
+            </ul>
+          </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+      </nav>
+
       <div class="container">
 
         <div>
@@ -38,12 +50,11 @@
             Dans le but d'éviter les incidents de démarrage lors de l'atelier, merci de suivre la partie "Pré-requis et installation" avant l'atelier, depuis un ordinateur connecté à Internet !
           </div>
         </div>
-        <h2 id="install">Pré-requis et installation</h2>
-        <p>
-L'utilisation de la machine virtuelle demande au minimum un ordinateur avec un CPU puissant (type Intel Core i5), <strong>8Go de RAM</strong>, et un système d'exploitation (Windows, Mac ou Linux) <strong>64 bits</strong>. Si votre machine ne dispose pas de ce hardware minimum, merci d'installer avant le début de l'atelier les logiciels indiqués plus bas, dans la section <a href="#novm">Sans machine virtuelle</a>.
-        </p>
+        <h2 id="install">Démarrage de la machine virtuelle</h2>
+        <div class="alert alert-warning" role="alert">
+          L'utilisation de la machine virtuelle demande au minimum un ordinateur avec un CPU puissant (type Intel Core i5), <strong>8Go de RAM</strong>, et un système d'exploitation (Windows, Mac ou Linux) <strong>64 bits</strong>. Si votre machine ne dispose pas de ce hardware minimum, merci de suivre avant le début de l'atelier les étapes d'installation décrites <a href="./novm.html">sur la page dédiée à l'installation sans machine virtuelle</a>.
+        </div>
 
-        <h3>Utilisation de la machine virtuelle fournie</h3>
         <p>
           <ul>
             <li>Téléchargez VirtualBox pour votre système à cette adresse : <a href="https://www.virtualbox.org/wiki/Downloads">https://www.virtualbox.org/wiki/Downloads</a></li>
@@ -60,271 +71,13 @@ L'utilisation de la machine virtuelle demande au minimum un ordinateur avec un C
               Le nom d'utilisateur est <code>elk</code>. Le mot de passe est <code>elk</code>.
             </li>
             <li>
-              Dans le lanceur à gauche de la fenêtre se trouvent un raccourci vers Firefox, avec en favori toutes les URL utiles de ce tutoriel, et un raccourci vers le terminal pour lancer toutes les commandes nécessaires. Tous les logiciels qui ne sont pas packagés ont été installés dans le dossier <code>/home/elk/atelier</code>.
+              Dans le lanceur à gauche de la fenêtre se trouvent un raccourci vers Firefox, avec en favori toutes les URL utiles de ce tutoriel, et un raccourci vers le terminal pour lancer toutes les commandes nécessaires.
+            </li>
+            <li>
+              Tous les logiciels qui ne sont pas packagés ont été installés dans le dossier <code>/home/elk/atelier</code>.
             </li>
           </ul>
         </p>
-
-        <h3 id="novm">Sans machine virtuelle</h3>
-        <p>
-Pour tous les logiciels qui ne seront pas installés sous forme de package, nous allons placer les binaires dans un même dossier. Tous les chemins seront relatifs à ce dossier, par exemple pour Linux : <code>/home/cvillard/elk</code>. Il y sera fait référence via la variable : <code>$MY_DIR</code>.
-        </p>
-        <h4>Java 8</h4>
-        <div class="panel panel-default">
-          <!-- Table -->
-          <table class="table table-bordered">
-            <tr>
-              <th>Linux (Ubuntu)</th>
-              <th>Windows</th>
-            </tr>
-            <tr>
-              <td>
-                <p>
-                  Contrôler la version de Java installée : 
-<pre>
-$ java -version
-openjdk version "1.8.0_66-internal"
-</pre>
-                  Si la version est inférieure à 1.8 ou si la commande est inconnue, installer l'openJDK 8 :
-<pre>
-$ sudo apt-get install openjdk-8-jdk
-</pre>
-                </p>
-              </td>
-              <td>
-                <p>
-                  Contrôler la version de Java installée : 
-<pre>
-> java -version
-java version "1.8.0_66"
-</pre>
-                  Si la version est inférieure à 1.8, <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">télécharger l'installeur pour Windows 64 bits à cette adresse</a>. 
-                </p>
-                <p>
-                  Lancer l'installation en conservant les options par défaut.
-                </p>
-                <p>
-                </p>
-              </td>
-            </tr>
-          </table>
-        </div>
-        <p>
-          Vérifier que l'installation s'est bien passée en reprenant la commande de vérification. 
-        </p>
-
-        <h4>LogStash</h4>
-        <p>Nous utiliserons la version 2.1.0 de LogStash. </p>
-        <ul>
-          <li>
-            Télécharger le ZIP ou le TAR.GZ de la version 2.1.0 à cette adresse : <a href="https://www.elastic.co/downloads/logstash">https://www.elastic.co/downloads/logstash</a>.</li>
-          <li>Décompresser l'archive dans <code>$MY_DIR</code>. </li>
-          <li>Tester que LogStash se lance bien avec la commande : 
-            <div class="panel panel-default">
-              <!-- Table -->
-              <table class="table table-bordered">
-                <tr>
-                  <th>Linux (Ubuntu)</th>
-                  <th>Windows</th>
-                </tr>
-                <tr>
-                  <td>
-<pre>
-$ ./logstash-2.1.0/bin/logstash version
-logstash 2.1.0
-</pre>
-                  </td>
-                  <td>
-<pre>
-$ .\logstash-2.1.0\bin\logstash version
-logstash 2.1.0
-</pre>
-                  </td>
-                </tr>
-              </table>
-            </div>
-          </li>
-          <li>
-            Si une erreur de la forme <code>JAVA_HOME environment variable must be set!</code> apparaît, ajouter la variable d'environnement système nommée <code>JAVA_HOME</code> en la faisant pointer vers le répertoire d'installation du JDK (sous Windows avec les paramètres par défaut : <code>C:\Program Files\Java\jdk1.8.0_66</code>).
-          </li>
-        </ul>
-
-        <h4>ElasticSearch</h4>
-        <p>Nous utiliserons la version 2.1.0 d'ElasticSearch. </p>
-        <ul>
-          <li>Télécharger le ZIP ou le TAR de la version 2.1.0 à cette adresse : <a href="https://www.elastic.co/downloads/elasticsearch">https://www.elastic.co/downloads/elasticsearch</a>.</li> 
-          <li>Décompresser l'archive dans <code>$MY_DIR</code>.</li> 
-          <li>Installer le plugin Head. Head est un plugin communautaire hébergé sur <a href="https://mobz.github.io/elasticsearch-head/">GitHub</a> permettant de visualiser l'état et le contenu d'un cluster ElasticSearch. Lancer la commande :
-<pre>
-$ ./elasticsearch-2.1.0/bin/plugin install mobz/elasticsearch-head
--> Installing mobz/elasticsearch-head...
-Trying https://github.com/mobz/elasticsearch-head/archive/master.zip ...
-Downloading ..............................................DONE
-Verifying https://github.com/mobz/elasticsearch-head/archive/master.zip checksums if available ...
-NOTE: Unable to verify checksum for downloaded plugin (unable to find .sha1 or .md5 file to verify)
-Installed head into /$MY_DIR/elasticsearch-2.1.0/plugins/head
-</pre>
-          </li>
-          <li>Démarrer ElasticSearch avec la commande : 
-            <div class="panel panel-default">
-              <!-- Table -->
-              <table class="table table-bordered">
-                <tr>
-                  <th>Linux (Ubuntu)</th>
-                  <th>Windows</th>
-                </tr>
-                <tr>
-                  <td>
-<pre>
-$ ./elasticsearch-2.1.0/bin/elasticsearch
-</pre>
-                  </td>
-                  <td>
-<pre>
-$ .\elasticsearch-2.1.0\bin\elasticsearch
-</pre>
-                  </td>
-                </tr>
-              </table>
-            </div>
-          </li>
-          <li>Une fois la trace suivante reçue dans la console (<code>Kirigi</code> étant le nom du nœud, il change à chaque démarrage) : 
-<pre>
-[2015-11-28 14:03:28,178][INFO ][node                     ] [Kirigi] started
-</pre>
-        Contrôler à l'URL <a href="http://localhost:9200/">http://localhost:9200/</a> qu'il répond :
-<pre>
-{
-  "name" : "Kirigi",
-  "cluster_name" : "elasticsearch",
-  "version" : {
-    "number" : "2.1.0",
-    "build_hash" : "72cd1f1a3eee09505e036106146dc1949dc5dc87",
-    "build_timestamp" : "2015-11-18T22:40:03Z",
-    "build_snapshot" : false,
-    "lucene_version" : "5.3.1"
-  },
-  "tagline" : "You Know, for Search"
-}
-</pre>
-          </li>
-        </ul>
-
-        <h4>cURL</h4>
-        <p>
-        cURL est utile pour soumettre des requêtes à ElasticSearch.
-        </p>
-        <div class="panel panel-default">
-          <!-- Table -->
-          <table class="table table-bordered">
-            <tr>
-              <th>Linux (Ubuntu)</th>
-              <th>Windows</th>
-            </tr>
-            <tr>
-              <td>
-                <p>
-<pre>
-$ sudo apt-get install curl
-</pre>
-                </p>
-              </td>
-              <td>
-                <p>
-                  Télécharger le ZIP <a href="http://winampplugins.co.uk/curl/">à cette adresse</a>. L'extraire dans un répertoire sur le disque. Il contient directement l'exécutable, sans installation.
-                </p>
-              </td>
-            </tr>
-          </table>
-        </div>
-
-        <h4>Kibana</h4>
-        <p>La version de Kibana compatible avec ElasticSearch 2.1.x est la version 4.3.0. </p>
-        <ul>
-          <li>Télécharger la version correspondant à votre système à l'adresse: <a href="https://www.elastic.co/downloads/kibana">https://www.elastic.co/downloads/kibana</a>. </li>
-          <li>Décompresser l'archive dans <code>$MY_DIR</code>. </li>
-          <li>Lancer Kibana avec la commande :
-            <div class="panel panel-default">
-              <!-- Table -->
-              <table class="table table-bordered">
-                <tr>
-                  <th>Linux (Ubuntu)</th>
-                  <th>Windows</th>
-                </tr>
-                <tr>
-                  <td>
-<pre>
-$ ./kibana-4.3.0-linux-x64/bin/kibana
-</pre>
-                  </td>
-                  <td>
-<pre>
-$ kibana-4.3.0-windows\bin\kibana
-</pre>
-                  </td>
-                </tr>
-              </table>
-            </div>
-          </li>
-          <li>Une fois la trace suivante obtenue dans la console :
-<pre>
-  log   [14:11:46.405] [info][listening] Server running at http://0.0.0.0:5601
-</pre>
-              Vérifier que Kibana répond à l'URL <a href="http://localhost:5601/">http://localhost:5601/</a>. On ne va rien configurer pour l'instant, cela fera partie de la suite du tutoriel.
-          </li>
-        </ul>
-
-        <h4>RabbitMQ</h4>
-        <p>Erlang est nécessaire au fonctionnement de RabbitMQ.
-        </p>
-        <div class="panel panel-default">
-          <!-- Table -->
-          <table class="table table-bordered">
-            <tr>
-              <th>Linux (Ubuntu)</th>
-              <th>Windows</th>
-            </tr>
-            <tr>
-              <td>
-                <p>Pour Ubuntu, installer le package fourni dans les dépots, il contient toutes les dépendances nécessaires :
-<pre>
-$ sudo apt-get install rabbitmq-server
-</pre>
-                  L'installation du paquet déclenche le démarrage du serveur. Contrôler cela via la commande :
-<pre>
-$ sudo rabbitmqctl status
-Status of node 'rabbit@claire-i5' ...
-[{pid,16510},
-...
- {uptime,248}]
-</pre>
-                </p>
-                <p>Pour les autres distributions, se reporter à la <a href="https://www.rabbitmq.com/download.html">documentation de l'outil</a> (peut nécessiter de compiler Erlang).
-                </p>
-              </td>
-              <td>
-                <p>
-                  Télécharger le package Erlang pour Windows 64 bits à l'adresse : <a href="http://www.erlang.org/download.html">http://www.erlang.org/download.html</a>.
-                </p>
-                <p>Exécuter l'installeur pour Windows en Administrateur en conservant les options par défaut. </p>
-
-                <p>Télécharger l'installeur de RabbitMQ pour Windows à l'adresse <a href="https://www.rabbitmq.com/download.html">https://www.rabbitmq.com/download.html</a>. 
-                </p>
-                <p>Exécuter l'installeur pour Windows en conservant les options par défaut. </p>
-                <p>
-                  Une fois l'installation terminée, ouvrir le prompt RabbitMQ via <code>Menu Démarrer > Tous les programmes > RabbitMQ Server > RabbitMQ Command Prompt (sbin dir)</code>. Dans l'invite de commande qui s'ouvre, taper la commande :
-<pre>
-> rabbitmqctl.bat status
-Status of node 'rabbit@ITEM-87177' ...
-[{pid,6672},
-...
- {uptime,62}]
-</pre>
-                </p>
-              </td>
-            </tr>
-          </table>
-        </div>
 
         <div class="alert alert-info" role="alert">
           Dans la suite du tutoriel, les actions à faire sont indiquées par l'icone : <span class="glyphicon glyphicon-hand-right" />
@@ -336,17 +89,17 @@ Status of node 'rabbit@ITEM-87177' ...
         </p>
         <p>
           <span class="glyphicon glyphicon-hand-right" ></span> 
-          Pour commencer, nous allons avoir besoin de logs à lire. Pour cela, enregistrer dans <code>$MY_DIR</code> <a href="./files/logstash-tutorial-small.log">ce fichier</a>.
+          Pour commencer, nous allons avoir besoin de logs à lire. Pour cela, enregistrer dans <code>/home/elk/atelier</code> <a href="./files/logstash-tutorial-small.log">ce fichier</a>.
         </p>
         <p>
           <span class="glyphicon glyphicon-hand-right" ></span>
-          Créer ensuite dans <code>$MY_DIR</code> un fichier nommé <code>logstash.conf</code>. L'éditer avec l'éditeur de texte de votre choix, et y placer le code suivant en remplaçant <code>$MY_DIR</code> par sa valeur (par exemple <code>/home/cvillard/elk</code>) :
+          Créer ensuite dans <code>/home/elk/atelier</code> un fichier nommé <code>logstash.conf</code>. L'éditer avec l'éditeur de texte de votre choix, et y placer le code suivant en remplaçant <code>/home/elk/atelier</code> par sa valeur (par exemple <code>/home/cvillard/elk</code>) :
 <pre>
 # C'est un commentaire
 input {
     # On définit ici les sources de données à traiter
     file {
-        path => "$MY_DIR/logstash-tutorial-small.log"
+        path => "/home/elk/atelier/logstash-tutorial-small.log"
         start_position => beginning 
     }
 }
@@ -364,7 +117,7 @@ output {
           <span class="glyphicon glyphicon-hand-right" ></span>
           Démarrer LogStash en lui indiquant le fichier de configuration : 
 <pre>
-$ ./logstash-2.1.0/bin/logstash agent -f './logstash.conf'
+$ /home/elk/atelier/logstash-2.1.0/bin/logstash agent -f './logstash.conf'
 Settings: Default filter workers: 2
 Logstash startup completed
 2015-11-28T15:34:10.995Z claire-i5 83.149.9.216 - - [04/Jan/2015:05:13:42 +0000] "GET /presentations/logstash-monitorama-2013/images/kibana-search.png HTTP/1.1" 200 203023 "http://semicomplete.com/presentations/logstash-monitorama-2013/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36"
@@ -397,10 +150,10 @@ Logstash shutdown completed
 input {
     # On définit ici les sources de données à traiter
     file {
-        path => "$MY_DIR/logstash-tutorial-small.log"
+        path => "/home/elk/atelier/logstash-tutorial-small.log"
         start_position => beginning 
         # on customise le sincedb_path et le nom du fichier
-        sincedb_path => "$MY_DIR/sincedb/sincedb_apache.log"
+        sincedb_path => "/home/elk/atelier/sincedb/sincedb_apache.log"
     }
 }
 </pre>
@@ -434,7 +187,7 @@ output {
           <span class="glyphicon glyphicon-hand-right" ></span>
           N'oubliez pas de supprimer le fichier <code>.sincedb_*</code> puis redémarrez LogStash avec la même commande que précédemment.
 <pre>
-$ ./logstash-2.1.0/bin/logstash agent -f './logstash.conf'
+$ /home/elk/atelier/logstash-2.1.0/bin/logstash agent -f './logstash.conf'
 Settings: Default filter workers: 2
 Logstash startup completed
 {"message":"83.149.9.216 - - [04/Jan/2015:05:13:42 +0000] \"GET /presentations/logstash-monitorama-2013/images/kibana-search.png HTTP/1.1\" 200 203023 \"http://semicomplete.com/presentations/logstash-monitorama-2013/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\"","@version":"1","@timestamp":"2015-11-28T16:10:15.811Z","host":"claire-i5","path":"/home/claire/Documents/atelier_es_mydir/logstash-tutorial-small.log","clientip":"83.149.9.216","ident":"-","auth":"-","timestamp":"04/Jan/2015:05:13:42 +0000","verb":"GET","request":"/presentations/logstash-monitorama-2013/images/kibana-search.png","httpversion":"1.1","response":"200","bytes":"203023","referrer":"\"http://semicomplete.com/presentations/logstash-monitorama-2013/\"","agent":"\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\""}
@@ -561,7 +314,7 @@ filter {
           <span class="glyphicon glyphicon-hand-right" ></span>
           N'oubliez pas de supprimer le fichier <code>.sincedb_*</code> puis redémarrez LogStash avec la même commande que précédemment.
 <pre>
-$ ./logstash-2.1.0/bin/logstash agent -f './logstash.conf'
+$ /home/elk/atelier/logstash-2.1.0/bin/logstash agent -f './logstash.conf'
 Settings: Default filter workers: 2
 Logstash startup completed
 {"message":"83.149.9.216 - - [04/Jan/2015:05:13:42 +0000] \"GET /presentations/logstash-monitorama-2013/images/kibana-search.png HTTP/1.1\" 200 203023 \"http://semicomplete.com/presentations/logstash-monitorama-2013/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\"","@version":"1","@timestamp":"2015-01-04T05:13:42.000Z","host":"claire-i5","path":"/home/claire/Documents/atelier_es_mydir/logstash-tutorial-small.log","clientip":"83.149.9.216","ident":"-","auth":"-","timestamp":"04/Jan/2015:05:13:42 +0000","verb":"GET","request":"/presentations/logstash-monitorama-2013/images/kibana-search.png","httpversion":"1.1","response":"200","bytes":"203023","referrer":"\"http://semicomplete.com/presentations/logstash-monitorama-2013/\"","agent":"\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\""}
@@ -887,10 +640,10 @@ curl -XPUT "http://localhost:9200/_template/logs_template" -d '
 input {
   # On définit ici les sources de données à traiter
   file {
-    path => "$MY_DIR/logstash-tutorial-dataset.log"
+    path => "/home/elk/atelier/logstash-tutorial-dataset.log"
     start_position => beginning
     # on customise le sincedb_path et le nom du fichier
-    sincedb_path => "$MY_DIR/sincedb/sincedb_apache.log"
+    sincedb_path => "/home/elk/atelier/sincedb/sincedb_apache.log"
   }
 }
 </pre>
@@ -919,7 +672,7 @@ input {
           <span class="glyphicon glyphicon-hand-right" ></span>
           Si Kibana est arrêté, lancez le avec la commande :
 <pre>
-$ ./kibana-4.3.0-linux-x64/bin/kibana
+$ /home/elk/atelier/kibana-4.3.0-linux-x64/bin/kibana
 </pre>
           Une fois la trace suivante obtenue dans la console :
 <pre>
@@ -933,7 +686,11 @@ $ ./kibana-4.3.0-linux-x64/bin/kibana
         Au premier lancement de Kibana, il nous demande quelques éléments de configuration de manière à savoir quelles données contenues dans ElasticSearch il va devoir traiter.
         </p>
         <div class="alert alert-warning" role="alert">
-          Attention si votre cluster ElasticSearch contient un grand nombre de templates utilisés dans tous vos index (plus de 50 templates et plus de 40 index par exemple) et que sur vos nœuds la Heap disponible pour ElasticSearch est plutôt faible : l'affichage de cet écran déclenche un parsing dans Elasticsearch de tous les mappings de tous les index. Cette requête peut utiliser jusqu'à 2Go de mémoire dans ElasticSearch avec ~2000 mappings, et provoquer la mort du cluster si la mémoire disponible est insuffisante ! Cette anomalie est en cours de correction côté ElasticSearch comme côté Kibana...
+          <p>
+            <strong>Attention</strong>
+          </p>
+          <p>
+            Si votre cluster ElasticSearch contient un grand nombre de templates utilisés dans tous vos index (plus de 50 templates et plus de 40 index par exemple) et que sur vos nœuds la Heap disponible pour ElasticSearch est plutôt faible : l'affichage de cet écran déclenche un parsing dans Elasticsearch de tous les mappings de tous les index. Cette requête peut utiliser jusqu'à 2Go de mémoire dans ElasticSearch avec ~2000 mappings, et provoquer la mort du cluster si la mémoire disponible est insuffisante ! Cette anomalie est en cours de correction côté ElasticSearch comme côté Kibana...
         </div>
         <p>
         Nous souhaitons traiter des données basées sur le temps (<em>time-based events</em>), situés dans des index (un seul index en fait) dont le nom commence par <code>logstash-*</code> et dont le champ normalisé contenant le timestamp est <code>@timestamp</code> (rappelez vous précédemment, nous avions configuré tout le nécessaire dans Logstash pour que ce champ soit correctement positionné).
@@ -1138,9 +895,11 @@ $ ./kibana-4.3.0-linux-x64/bin/kibana
         <p>
         Dans cette partie, vous pouvez donc :
           <ol>
-            <li>Démarrer un serveur RabbitMQ sur votre poste via la commande <code>$MY_DIR/rabbitmq_server-3.5.6/sbin/rabbitmq-server -detached</code></li>
-            <li>Activer l'interface graphique d'administration via la commande : 
-<pre>$MY_DIR/rabbitmq_server-3.5.6/sbin/rabbitmq-plugins enable rabbitmq_management
+            <li>Démarrer un serveur RabbitMQ sur votre poste via la commande (en <code>root</code>) :
+              <pre># service rabbitmq-server start</pre>
+            </li>
+            <li>Activer l'interface graphique d'administration via la commande (en <code>root</code>) : 
+<pre># rabbitmq-plugins enable rabbitmq_management
 The following plugins have been enabled:
   mochiweb
   webmachine
@@ -1182,7 +941,7 @@ Applying plugin configuration to rabbit@claire-i5... started 6 plugins.
         Dans cette partie, vous pouvez donc :
           <ol>
             <li>
-                Démarrer un second noeud ElasticSearch en conservant les paramètres par défaut et en utilisant le même fichier de configuration : <code>$MY_DIR/elasticsearch-2.1.0/bin/elasticsearch</code>
+                Démarrer un second noeud ElasticSearch en conservant les paramètres par défaut et en utilisant le même fichier de configuration : <code>/home/elk/atelier/elasticsearch-2.1.0/bin/elasticsearch</code>
             </li>
             <li>Observer le résultat dans l'IHM Head d'ElasticSearch : <a href="http://localhost:9200/">http://localhost:9200/</a> <br />
                 <img src="./images/es_cluster.png" />
@@ -1194,7 +953,7 @@ Applying plugin configuration to rabbit@claire-i5... started 6 plugins.
               <strong>Quelques explications...</strong>
           </p>
           <p>
-              En conservant un fichier de configuration <code>$MY_DIR/elasticsearch-2.1.0/config/elasticsearch.yml</code> par défaut, à chaque démarrage ElasticSearch prend un nom de noeud au hasard, et le premier port disponible à partir de 9200 pour l'API HTTP et 9300 pour sa communication interne. Cela permet de démarrer rapidement, mais fonctionner avec des paramètres par défaut et faire fonctionner 2 noeuds sur la même machine est déconseillé en production : difficulté d'exploitation, perte de la tolérance aux pannes, mutualisation préjudiciable des ressources...
+              En conservant un fichier de configuration <code>/home/elk/atelier/elasticsearch-2.1.0/config/elasticsearch.yml</code> par défaut, à chaque démarrage ElasticSearch prend un nom de noeud au hasard, et le premier port disponible à partir de 9200 pour l'API HTTP et 9300 pour sa communication interne. Cela permet de démarrer rapidement, mais fonctionner avec des paramètres par défaut et faire fonctionner 2 noeuds sur la même machine est déconseillé en production : difficulté d'exploitation, perte de la tolérance aux pannes, mutualisation préjudiciable des ressources...
           </p>
 
         </div>

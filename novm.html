@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <title>Hands On : ELK</title>
+
+  <!-- Bootstrap -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- home made custom CSS -->
+  <link href="css/tuto.css" rel="stylesheet">
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+    </head>
+    <body>
+
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <a class="navbar-brand" href="./index.html">Tutoriel</a>
+            <ul class="nav navbar-nav">
+              <li><a href="./novm.html">Installation sans VM</a></li>
+            </ul>
+          </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+      </nav>
+
+      <div class="container">
+
+        <div>
+          <h1> Hands On : LogStash, ElasticSearch, Kibana, et plus encore </h1>
+          <p class="lead">Si votre ordinateur ne dispose pas au moins d'un OS 64 bits, de 8Go de RAM et d'un CPU suffisamment puissant type Core i5, vous pouvez suivre les étapes suivantes pour installer tout le nécessaire au tutoriel sans utiliser de machine virtuelle.
+          </p>
+        </div>
+
+        <div class="alert alert-info" role="alert">
+          <p>
+            Pour tous les logiciels qui ne seront pas installés sous forme de package, il est conseillé de placer les binaires dans un même dossier. Dans la machine virtuelle, nous avons utilisé le dossier : <code>/home/elk/atelier</code>. Dans le tutoriel comme dans ce guide d'installation, lorsque les commandes mentionneront le dossier <code>/home/elk/atelier</code>, pensez à les adapter à votre cas.
+          </p>
+          <p>
+            Pour Windows, nous avons utilisé le dossier <code>C:\atelier\</code>.
+          </p>
+        </div>
+        <div class="alert alert-info" role="alert">
+          Une fois tous les produits installés, vous pouvez retourner au tutoriel en <a href="./index.html#logstash">cliquant ici</a>.
+        </div>
+        <h2>Java 8</h2>
+        <div class="panel panel-default">
+          <!-- Table -->
+          <table class="table table-bordered">
+            <tr>
+              <th>Linux (Ubuntu)</th>
+              <th>Windows</th>
+            </tr>
+            <tr>
+              <td>
+                <p>
+                  Contrôler la version de Java installée : 
+<pre>
+$ java -version
+openjdk version "1.8.0_66-internal"
+</pre>
+                  Si la version est inférieure à 1.8 ou si la commande est inconnue, installer l'openJDK 8 :
+<pre>
+$ sudo apt-get install openjdk-8-jdk
+</pre>
+                </p>
+              </td>
+              <td>
+                <p>
+                  Contrôler la version de Java installée : 
+<pre>
+> java -version
+java version "1.8.0_66"
+</pre>
+                  Si la version est inférieure à 1.8, <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">télécharger l'installeur pour Windows 64 bits à cette adresse</a>. 
+                </p>
+                <p>
+                  Lancer l'installation en conservant les options par défaut.
+                </p>
+                <p>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <p>
+          Vérifier que l'installation s'est bien passée en reprenant la commande de vérification. 
+        </p>
+
+        <h2>LogStash</h2>
+        <p>Nous utiliserons la version 2.1.0 de LogStash. </p>
+        <ul>
+          <li>
+            Télécharger le ZIP ou le TAR.GZ de la version 2.1.0 à cette adresse : <a href="https://www.elastic.co/downloads/logstash">https://www.elastic.co/downloads/logstash</a>.</li>
+          <li>Décompresser l'archive dans <code>/home/elk/atelier</code> ou <code>C:\atelier\</code>. </li>
+          <li>Tester que LogStash se lance bien avec la commande : 
+            <div class="panel panel-default">
+              <!-- Table -->
+              <table class="table table-bordered">
+                <tr>
+                  <th>Linux (Ubuntu)</th>
+                  <th>Windows</th>
+                </tr>
+                <tr>
+                  <td>
+<pre>
+$ /home/elk/atelier/logstash-2.1.0/bin/logstash version
+logstash 2.1.0
+</pre>
+                  </td>
+                  <td>
+<pre>
+$ C:\atelier\logstash-2.1.0\bin\logstash version
+logstash 2.1.0
+</pre>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </li>
+          <li>
+            Si une erreur de la forme <code>JAVA_HOME environment variable must be set!</code> apparaît, ajouter la variable d'environnement système nommée <code>JAVA_HOME</code> en la faisant pointer vers le répertoire d'installation du JDK (sous Windows avec les paramètres par défaut : <code>C:\Program Files\Java\jdk1.8.0_66</code>).
+          </li>
+        </ul>
+
+        <h2>ElasticSearch</h2>
+        <p>Nous utiliserons la version 2.1.0 d'ElasticSearch. </p>
+        <ul>
+          <li>Télécharger le ZIP ou le TAR de la version 2.1.0 à cette adresse : <a href="https://www.elastic.co/downloads/elasticsearch">https://www.elastic.co/downloads/elasticsearch</a>.</li> 
+          <li>Décompresser l'archive dans <code>/home/elk/atelier</code> ou <code>C:\atelier\</code>.</li> 
+          <li>Installer le plugin Head. Head est un plugin communautaire hébergé sur <a href="https://mobz.github.io/elasticsearch-head/">GitHub</a> permettant de visualiser l'état et le contenu d'un cluster ElasticSearch. Lancer la commande :
+<pre>
+$ /home/elk/atelier/elasticsearch-2.1.0/bin/plugin install mobz/elasticsearch-head
+-> Installing mobz/elasticsearch-head...
+Trying https://github.com/mobz/elasticsearch-head/archive/master.zip ...
+Downloading ..............................................DONE
+Verifying https://github.com/mobz/elasticsearch-head/archive/master.zip checksums if available ...
+NOTE: Unable to verify checksum for downloaded plugin (unable to find .sha1 or .md5 file to verify)
+Installed head into //home/elk/atelier/elasticsearch-2.1.0/plugins/head
+</pre>
+          </li>
+          <li>Démarrer ElasticSearch avec la commande : 
+            <div class="panel panel-default">
+              <!-- Table -->
+              <table class="table table-bordered">
+                <tr>
+                  <th>Linux (Ubuntu)</th>
+                  <th>Windows</th>
+                </tr>
+                <tr>
+                  <td>
+<pre>
+$ /home/elk/atelier/elasticsearch-2.1.0/bin/elasticsearch
+</pre>
+                  </td>
+                  <td>
+<pre>
+$ C:\atelier\elasticsearch-2.1.0\bin\elasticsearch
+</pre>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </li>
+          <li>Une fois la trace suivante reçue dans la console (<code>Kirigi</code> étant le nom du nœud, il change à chaque démarrage) : 
+<pre>
+[2015-11-28 14:03:28,178][INFO ][node                     ] [Kirigi] started
+</pre>
+        Contrôler à l'URL <a href="http://localhost:9200/">http://localhost:9200/</a> qu'il répond :
+<pre>
+{
+  "name" : "Kirigi",
+  "cluster_name" : "elasticsearch",
+  "version" : {
+    "number" : "2.1.0",
+    "build_hash" : "72cd1f1a3eee09505e036106146dc1949dc5dc87",
+    "build_timestamp" : "2015-11-18T22:40:03Z",
+    "build_snapshot" : false,
+    "lucene_version" : "5.3.1"
+  },
+  "tagline" : "You Know, for Search"
+}
+</pre>
+          </li>
+        </ul>
+
+        <h2>cURL</h2>
+        <p>
+        cURL est utile pour soumettre des requêtes à ElasticSearch.
+        </p>
+        <div class="panel panel-default">
+          <!-- Table -->
+          <table class="table table-bordered">
+            <tr>
+              <th>Linux (Ubuntu)</th>
+              <th>Windows</th>
+            </tr>
+            <tr>
+              <td>
+                <p>
+<pre>
+$ sudo apt-get install curl
+</pre>
+                </p>
+              </td>
+              <td>
+                <p>
+                  Télécharger le ZIP <a href="http://winampplugins.co.uk/curl/">à cette adresse</a>. L'extraire dans <code>C:\atelier\</code>. Il contient directement l'exécutable, sans installation.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <h2>Kibana</h2>
+        <p>La version de Kibana compatible avec ElasticSearch 2.1.x est la version 4.3.0. </p>
+        <ul>
+          <li>Télécharger la version correspondant à votre système à l'adresse: <a href="https://www.elastic.co/downloads/kibana">https://www.elastic.co/downloads/kibana</a>. </li>
+          <li>Décompresser l'archive dans <code>/home/elk/atelier</code> ou <code>C:\atelier\</code>. </li>
+          <li>Lancer Kibana avec la commande :
+            <div class="panel panel-default">
+              <!-- Table -->
+              <table class="table table-bordered">
+                <tr>
+                  <th>Linux (Ubuntu)</th>
+                  <th>Windows</th>
+                </tr>
+                <tr>
+                  <td>
+<pre>
+$ /home/elk/atelier/kibana-4.3.0-linux-x64/bin/kibana
+</pre>
+                  </td>
+                  <td>
+<pre>
+$ C:\atelier\kibana-4.3.0-windows\bin\kibana
+</pre>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </li>
+          <li>Une fois la trace suivante obtenue dans la console :
+<pre>
+  log   [14:11:46.405] [info][listening] Server running at http://0.0.0.0:5601
+</pre>
+              Vérifier que Kibana répond à l'URL <a href="http://localhost:5601/">http://localhost:5601/</a>. On ne va rien configurer pour l'instant, cela fera partie de la suite du tutoriel.
+          </li>
+        </ul>
+
+        <h2>RabbitMQ</h2>
+        <p>Erlang est nécessaire au fonctionnement de RabbitMQ.
+        </p>
+        <div class="panel panel-default">
+          <!-- Table -->
+          <table class="table table-bordered">
+            <tr>
+              <th>Linux (Ubuntu)</th>
+              <th>Windows</th>
+            </tr>
+            <tr>
+              <td>
+                <p>Pour Ubuntu, installer le package fourni dans les dépots, il contient toutes les dépendances nécessaires :
+<pre>
+$ sudo apt-get install rabbitmq-server
+</pre>
+                  L'installation du paquet déclenche le démarrage du serveur. Contrôler cela via la commande :
+<pre>
+$ sudo rabbitmqctl status
+Status of node 'rabbit@claire-i5' ...
+[{pid,16510},
+...
+ {uptime,248}]
+</pre>
+                </p>
+                <p>Pour les autres distributions, se reporter à la <a href="https://www.rabbitmq.com/download.html">documentation de l'outil</a> (peut nécessiter de compiler Erlang).
+                </p>
+              </td>
+              <td>
+                <p>
+                  Télécharger le package Erlang pour Windows 64 bits à l'adresse : <a href="http://www.erlang.org/download.html">http://www.erlang.org/download.html</a>.
+                </p>
+                <p>Exécuter l'installeur pour Windows en Administrateur en conservant les options par défaut. </p>
+
+                <p>Télécharger l'installeur de RabbitMQ pour Windows à l'adresse <a href="https://www.rabbitmq.com/download.html">https://www.rabbitmq.com/download.html</a>. 
+                </p>
+                <p>Exécuter l'installeur pour Windows en conservant les options par défaut. </p>
+                <p>
+                  Une fois l'installation terminée, ouvrir le prompt RabbitMQ via <code>Menu Démarrer > Tous les programmes > RabbitMQ Server > RabbitMQ Command Prompt (sbin dir)</code>. Dans l'invite de commande qui s'ouvre, taper la commande :
+<pre>
+> rabbitmqctl.bat status
+Status of node 'rabbit@ITEM-87177' ...
+[{pid,6672},
+...
+ {uptime,62}]
+</pre>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+
+
+
+
+    </div><!-- /.container -->
+
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <ul class="footer-links text-center">
+          <li><a href="http://www.duchess-france.org/"><img src="images/duchess.jpg" heigth="32px" width="32px" /></a></li>
+          <li>&middot;</li>
+          <li><a href="https://twitter.com/leneurone_eu"><img src="images/twitter.png" /></a></li>
+          <li>&middot;</li>
+          <li><a href="https://github.com/leneurone/atelier-duchess-elk"><img src="images/github.png" /></a></li>
+        </ul>
+      </div>
+    </footer> <!-- footer -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>
