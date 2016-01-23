@@ -188,8 +188,18 @@ output {
 </pre>
         </p>
         <p>
+          <span class="glyphicon glyphicon-hand-right" ></span> Supprimez le fichier <code>.sincedb_*</code> avec l'une des commandes suivantes, selon que vous ayez customisé le chemin de stockage du fichier :
+<pre>
+$ rm -f /home/elk/atelier/sincedb/sincedb_apache.log
+</pre>
+          Ou si vous avez conservé les paramètres par défaut :
+<pre>
+$ rm -f /home/elk/.sincedb_*
+</pre>
+        </p>
+        <p>
           <span class="glyphicon glyphicon-hand-right" ></span>
-          N'oubliez pas de supprimer le fichier <code>.sincedb_*</code> puis redémarrez LogStash avec la même commande que précédemment.
+          Redémarrez LogStash avec la même commande que précédemment.
 <pre>
 $ /home/elk/atelier/logstash-2.1.0/bin/logstash agent -f '/home/elk/atelier/logstash.conf'
 Settings: Default filter workers: 2
@@ -342,6 +352,31 @@ Logstash shutdown completed
         <h2 id="es">Étape 2 : ElasticSearch</h2>
         <p>
         Dans cette étape, nous allons utiliser le résultat de l'étape précédente pour indexer les logs découpés dans ElasticSearch et les rechercher sommairement via l'API REST d'ElasticSearch. Nous apprendrons également comme configurer sommairement ElasticSearch et comment le monitorer via un plugin.
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span> Démarrer ElasticSearch avec la commande : 
+<pre>
+$ /home/elk/atelier/elasticsearch-2.1.0/bin/elasticsearch
+</pre>
+          Au bout d'un instant, la trace suivante apparaît dans la console (<code>Kirigi</code> étant le nom du nœud, il change à chaque démarrage) : 
+<pre>
+[2015-11-28 14:03:28,178][INFO ][node                     ] [Kirigi] started
+</pre>
+          <span class="glyphicon glyphicon-hand-right" ></span> Contrôler alors à l'URL <a href="http://localhost:9200/">http://localhost:9200/</a> qu'ElasticSearch répond :
+<pre>
+{
+  "name" : "Kirigi",
+  "cluster_name" : "elasticsearch",
+  "version" : {
+    "number" : "2.1.0",
+    "build_hash" : "72cd1f1a3eee09505e036106146dc1949dc5dc87",
+    "build_timestamp" : "2015-11-18T22:40:03Z",
+    "build_snapshot" : false,
+    "lucene_version" : "5.3.1"
+  },
+  "tagline" : "You Know, for Search"
+}
+</pre>
         </p>
         <p>
         Nous allons commencer par envoyer les logs à ElasticSearch depuis LogStash.
