@@ -570,12 +570,17 @@ output {
         Il n'est pas possible de corriger un mapping Elasticsearch sans ré-indexer les données. Comme dans notre cas nous n'avons qu'une seule donnée, nous allons supprimer l'index, et le document et le mapping deviné avec lui, pour pouvoir le reconfigurer proprement et soumettre de nouveau notre ligne de log pour indexation.
         </p>
         <p>
-        Deux solutions existent pour supprimer un index. La première est la ligne de commande si on dispose du programme cURL installé :
+        Deux solutions existent pour supprimer un index. La première est l'installation d'un plugin de monitoring standard d'ElasticSearch, très utile pour consulter rapidement la santé de son cluster, le nombre et le contenu des index ainsi que tout le paramétrage du cluster ou des nœuds : <strong>Head</strong>.
+        </p>
+        <p>
+          La seconde solution pour supprimer un index dans ElasticSearch est la ligne de commande si on dispose du programme cURL installé :
 <pre>
 $ curl -XDELETE "http://localhost:9200/logstash-2015.01.04/"
 {"acknowledged":true}
 </pre>
-        La seconde est l'installation d'un plugin de monitoring standard d'ElasticSearch, très utile pour consulter rapidement la santé de son cluster, le nombre et le contenu des index ainsi que tout le paramétrage du cluster ou des nœuds : <strong>Head</strong>.
+        </p>
+        <p>
+        Nous allons donc nous servir de Head pour supprimer notre index mal configuré. 
         </p>
         <p>
           <span class="glyphicon glyphicon-hand-right" ></span>
@@ -593,9 +598,6 @@ $ curl -XDELETE "http://localhost:9200/logstash-2015.01.04/"
         </p>
         <p>
         Les onglets "Recherche structurée" et "Autres requêtes" permettent de faire des requêtes complexes sur le cluster.
-        </p>
-        <p>
-        Nous allons donc nous servir de Head pour supprimer notre index mal configuré. 
         </p>
         <p>
           <span class="glyphicon glyphicon-hand-right" ></span>
