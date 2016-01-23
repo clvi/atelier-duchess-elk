@@ -47,7 +47,7 @@
             </ul>
           </p>
           <div class="alert alert-warning" role="alert">
-            Dans le but d'éviter les incidents de démarrage lors de l'atelier, merci de suivre la partie "Pré-requis et installation" avant l'atelier, depuis un ordinateur connecté à Internet !
+            Dans le but d'éviter les incidents de démarrage lors de l'atelier, merci de tester le lancement de la machine virtuelle depuis un ordinateur connecté à Internet !
           </div>
         </div>
         <h2 id="install">Démarrage de la machine virtuelle</h2>
@@ -113,11 +113,15 @@ output {
 
 </pre>
         </p>
+        <div class="alert alert-warning" role="alert">
+          <p><strong>Attention</strong></p>
+          <p>Pour ceux qui n'utilisent pas la machine virtuelle, le chemin indiqué dans le paramètre <code>path => ...</code> doit être adapté, ainsi que dans tous les exemples de configuration indiqués dans la suite du tutoriel.</p>
+        </div>
         <p>
           <span class="glyphicon glyphicon-hand-right" ></span>
           Démarrer LogStash en lui indiquant le fichier de configuration : 
 <pre>
-$ /home/elk/atelier/logstash-2.1.0/bin/logstash agent -f './logstash.conf'
+$ /home/elk/atelier/logstash-2.1.0/bin/logstash agent -f '/home/elk/atelier/logstash.conf'
 Settings: Default filter workers: 2
 Logstash startup completed
 2015-11-28T15:34:10.995Z claire-i5 83.149.9.216 - - [04/Jan/2015:05:13:42 +0000] "GET /presentations/logstash-monitorama-2013/images/kibana-search.png HTTP/1.1" 200 203023 "http://semicomplete.com/presentations/logstash-monitorama-2013/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36"
@@ -187,7 +191,7 @@ output {
           <span class="glyphicon glyphicon-hand-right" ></span>
           N'oubliez pas de supprimer le fichier <code>.sincedb_*</code> puis redémarrez LogStash avec la même commande que précédemment.
 <pre>
-$ /home/elk/atelier/logstash-2.1.0/bin/logstash agent -f './logstash.conf'
+$ /home/elk/atelier/logstash-2.1.0/bin/logstash agent -f '/home/elk/atelier/logstash.conf'
 Settings: Default filter workers: 2
 Logstash startup completed
 {"message":"83.149.9.216 - - [04/Jan/2015:05:13:42 +0000] \"GET /presentations/logstash-monitorama-2013/images/kibana-search.png HTTP/1.1\" 200 203023 \"http://semicomplete.com/presentations/logstash-monitorama-2013/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\"","@version":"1","@timestamp":"2015-11-28T16:10:15.811Z","host":"claire-i5","path":"/home/claire/Documents/atelier_es_mydir/logstash-tutorial-small.log","clientip":"83.149.9.216","ident":"-","auth":"-","timestamp":"04/Jan/2015:05:13:42 +0000","verb":"GET","request":"/presentations/logstash-monitorama-2013/images/kibana-search.png","httpversion":"1.1","response":"200","bytes":"203023","referrer":"\"http://semicomplete.com/presentations/logstash-monitorama-2013/\"","agent":"\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\""}
@@ -314,7 +318,7 @@ filter {
           <span class="glyphicon glyphicon-hand-right" ></span>
           N'oubliez pas de supprimer le fichier <code>.sincedb_*</code> puis redémarrez LogStash avec la même commande que précédemment.
 <pre>
-$ /home/elk/atelier/logstash-2.1.0/bin/logstash agent -f './logstash.conf'
+$ /home/elk/atelier/logstash-2.1.0/bin/logstash agent -f '/home/elk/atelier/logstash.conf'
 Settings: Default filter workers: 2
 Logstash startup completed
 {"message":"83.149.9.216 - - [04/Jan/2015:05:13:42 +0000] \"GET /presentations/logstash-monitorama-2013/images/kibana-search.png HTTP/1.1\" 200 203023 \"http://semicomplete.com/presentations/logstash-monitorama-2013/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\"","@version":"1","@timestamp":"2015-01-04T05:13:42.000Z","host":"claire-i5","path":"/home/claire/Documents/atelier_es_mydir/logstash-tutorial-small.log","clientip":"83.149.9.216","ident":"-","auth":"-","timestamp":"04/Jan/2015:05:13:42 +0000","verb":"GET","request":"/presentations/logstash-monitorama-2013/images/kibana-search.png","httpversion":"1.1","response":"200","bytes":"203023","referrer":"\"http://semicomplete.com/presentations/logstash-monitorama-2013/\"","agent":"\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\""}
