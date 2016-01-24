@@ -871,6 +871,25 @@ $ /home/elk/atelier/kibana-4.3.0-linux-x64/bin/kibana
         Un exemple d'un dashboard affichant la répartition des codes retour par valeur, la répartition des timestamp par minute et la répartition de la taille des réponses regroupées par 10k bytes :
         <img src="./images/kibana_dashboard.png" />
         </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Pour reproduire ce dashboard, vous pouvez télécharger <a href="./files/kibana_conf.json">le fichier d'export Kibana suivant</a>.
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Dans Kibana, cliquez sur le menu <code>Settings</code> puis <code>Objects</code>.
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Cliquez sur le bouton <code>Import</code>, choisissez le fichier JSON que vous venez de télécharger. Validez. Vous devriez voir apparaître un dashboard nommé <code>dashboard 1</code> dans la liste des dashboards, ainsi que 4 visualisations.
+        </p>
+        <p>
+          <img src="./images/kibana_import.png" />
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Rendez-vous ensuite dans l'onglet Dashboards. Cliquez sur le bouton <code>Load saved dashboard</code>. Choisissez le dashboard <code>dashboard 1</code>.
+        </p>
         <div class="alert alert-warning" role="alert">
           <p>Les visualisations, et a fortiori les dashboards, utilisent une fonctionnalité d'ElasticSearch nommé Agrégations. Cela permet de réaliser en une seule requête, et en profitant des performances et de la distribution des recherches, d'obtenir à la fois les documents correspondant à la recherche et un certain nombre de valeurs calculées à partir du contenu de ces documents : nombre d'occurrence de chaque valeur différente, répartition des valeurs dans le temps, etc.
           </p>
