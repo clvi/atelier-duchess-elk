@@ -42,9 +42,12 @@
       </div>
       <h2>Stockage interne des données</h2>
       <h3>Index</h3>
-      <div class="alert alert-danger" role="alert">
-        TODO
-      </div>
+      <p>
+        Un <em>index</em> est une sorte de répertoire dans lequel ElasticSearch va stocker des <em>documents</em>. Lorsqu'on demande d'indexer des données, il faut indiquer dans quel index il faut les placer. Lorsqu'on fait des recherches, on peut préciser un index ou un ensemble d'index sur lesquels exécuter la requête.
+      </p>
+      <p>
+        Dans notre cas, LogStash a décidé du nom de l'index à notre place en indiquant à ElasticSearch le nom d'index commençant par <code>logstash-</code> et terminant par le jour du log à indexer.
+      </p>
       <h3>Document</h3>
       <p>
         Un <em>document</em> désigne une donnée indexée dans ElasticSearch. Cette donnée a un <em>type</em> qui défini les champs qu'elle contient et la manière dont il est indexé. Lorsqu'on fait une recherche dans ElasticSearch, chaque résultat retourné par la recherche est un document.
@@ -54,16 +57,19 @@
       </p>
       <h3>Shards</h3>
       <p>
-        Un <em>shard</em> est une portion d'index, qui contient des données. La répartition des données entre les différents index est décidée par l'utilisateur, qui indique dans sa requête le nom de l'index ciblé. LogStash a fait ce travail à notre place en indiquant à ElasticSearch le nom d'index commençant par <code>logstash-</code> et terminant par le jour du log à indexer. 
+        Un <em>shard</em> est une portion d'index, qui contient des données. 
       </p>
       <p>
         Lorsqu'il reçoit des documents à indexer dans un index donné, ElasticSearch les dispatche de manière homogène entre différents <em>shards</em>. Par défaut, chaque index possède 5 <em>shards</em> mais il est possible de configurer cette valeur en fonction du nombre de nœuds dans le cluster ElasticSearch, de la volumétrie de données et des requêtes réalisées. Chaque <em>shard</em> porte donc une partie des données de l'index, 20% dans notre cas puisque l'index possède 5 <em>shards</em>. Ce sont ces <em>shards</em> qu'ElasticSearch va ensuite automatiquement répartir entre les nœuds du cluster, ainsi que leurs répliques (1 par défaut) pour assurer à la fois la scalabilité, les performances, et la tolérance aux pannes.
       </p>
 
       <h3>Mappings et templates</h3>
-      <div class="alert alert-danger" role="alert">
-        TODO
-      </div>
+      <p>
+        Un <em>mapping</em> est, dans un index, la description de la structure des données et pour chaque champ, de la manière dont il va être indexé. Le mapping peut ainsi indiquer qu'un champ texte devra être analysé en séparant chaque mot selon un caractère de séparation (un espace généralement, mais il peut également s'agir d'une virgule, ou d'un |), et en le passant en minuscules. Ainsi, dans cet exemple, si un champ <code>myfield</code> contient la valeur <code>Un|DEUX|trois</code> et qu'on indexe en séparant sur les | et en minuscules, les valeurs <code>un</code>, <code>deux</code> et <code>trois</code> vont être indexées séparément comme correspondant au champ <code>myfield</code> de ce document.
+      </p>
+      <p>
+        Un <em>template</em> est une configuration globale du cluster ElasticSearch, qui va être traduite en mappings lors de la création des index si leur nom correspond au pattern indiqué dans le template. Comme on l'a vu, les index peuvent être créés dynamiquement au fil du temps, cela permet donc de configurer une fois l'indexation et que cela s'applique automatiquement aux nouveaux index. 
+      </p>
 
       <h2>Explication du résultat d'une requête</h2>
 
