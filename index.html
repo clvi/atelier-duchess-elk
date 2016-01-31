@@ -451,6 +451,9 @@ output {
         <div class="alert alert-info" role="alert">
           Pour plus de détails sur le contenu de cette réponse, vous pouvez vous reporter à son explication sur la page <a href="./es_concept.html">Concepts ElasticSearch</a>.
         </div>
+        <div class="alert alert-info" role="alert">
+          L'extension Chrome et Firefox JSONView permet d'afficher le résultat des requêtes directement formatés dans le navigateur.
+        </div>
         <p>
           Dans la réponse retournée, on voit que la donnée est de type <code>logs</code> :
 <pre>
@@ -914,6 +917,10 @@ $ /home/elk/atelier/kibana-4.3.0-linux-x64/bin/kibana
         <p>Ces deux points peuvent être problématiques en production : La charge induite par LogStash peut perturber les applications supervisées, et toute indisponibilité d'ElasticSearch peut impacter le fonctionnement de l'agent.
         </p>
         <p>Pour résoudre cela, il est préférable d'installer LogStash sur les machines supervisées avec une configuration minimale, qui ne fait que lire les fichiers de logs, gérer le multi-ligne si nécessaire, et pousser les messages dans la suite de l'infrastructure, elle située sur des machines dédiées. Le traitement poussé des messages (Grok notamment) sera réalisé par une ou plusieurs autres instances de LogStash (voir le paragraphe "Clustering" plus loin) sur ces machines dédiées, et se chargera de pousser dans ElasticSearch.
+        </p>
+        <p>
+          Parce qu'un petit schéma vaut souvent mieux qu'un long discours, l'architecture cible est donc la suivante :
+          <img src="./images/archi_rabbitmq.png"/>
         </p>
         <p>
         Pour communiquer entre le LogStash "agent" installé sur les machines clientes et le LogStash "serveur" réalisant les traitements, il faut insérer entre eux deux une brique intermédiaire de "broker de messages". Plusieurs technologies peuvent être utilisées pour cela : Redis, RabbitMQ, Apache Kafka... Chacune de ces solutions ont leurs avantages et leurs inconvénients, à adapter à chaque cas d'usage. RabbitMQ offrant une bonne simplicité de mise en œuvre et une interface d'administration pratiques dans le cadre de ce tutoriel, c'est ce que nous allons utiliser.
