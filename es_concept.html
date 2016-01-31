@@ -63,7 +63,7 @@
         Lorsqu'il reçoit des documents à indexer dans un index donné, ElasticSearch les dispatche de manière homogène entre différents <em>shards</em>. Par défaut, chaque index possède 5 <em>shards</em> mais il est possible de configurer cette valeur en fonction du nombre de nœuds dans le cluster ElasticSearch, de la volumétrie de données et des requêtes réalisées. Chaque <em>shard</em> porte donc une partie des données de l'index, 20% dans notre cas puisque l'index possède 5 <em>shards</em>. Ce sont ces <em>shards</em> qu'ElasticSearch va ensuite automatiquement répartir entre les nœuds du cluster, ainsi que leurs répliques (1 par défaut) pour assurer à la fois la scalabilité, les performances, et la tolérance aux pannes.
       </p>
 
-      <h3>Mappings et templates</h3>
+      <h3 id="mappingandtemplates">Mappings et templates</h3>
       <p>
         Un <em>mapping</em> est, dans un index, la description de la structure des données et pour chaque champ, de la manière dont il va être indexé. Le mapping peut ainsi indiquer qu'un champ texte devra être analysé en séparant chaque mot selon un caractère de séparation (un espace généralement, mais il peut également s'agir d'une virgule, ou d'un |), et en le passant en minuscules. Ainsi, dans cet exemple, si un champ <code>myfield</code> contient la valeur <code>Un|DEUX|trois</code> et qu'on indexe en séparant sur les | et en minuscules, les valeurs <code>un</code>, <code>deux</code> et <code>trois</code> vont être indexées séparément comme correspondant au champ <code>myfield</code> de ce document.
       </p>

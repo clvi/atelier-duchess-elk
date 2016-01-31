@@ -344,7 +344,54 @@ Logstash shutdown completed
     "timestamp":"04/Jan/2015:05:13:42 +0000",
 </pre>
 
-        Les deux valeurs sont bien identiques, on pourra donc une fois dans ElasticSearch faire une recherche sur le champ standard <code>@timestamp</code> et avoir des résultats pertinents...
+        Les deux valeurs sont bien identiques, on pourra donc une fois dans ElasticSearch faire une recherche sur le champ standard <code>@timestamp</code> et avoir des résultats pertinents.
+        </p>
+        <p>
+          Afin d'améliorer l'exploitation future des logs, il peut également être intéressant de typer les champs numériques comme tels. Comme nous le verrons dans la suite de ce tutoriel, cela peut aider Elasticsearch lors de l'interprétation. Dans notre cas, nous avons 2 champs numériques : <code>bytes</code> et <code>response</code>.
+        </p>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          Pour typer ces champs, ouvrir le fichier <code>logstash.conf</code>, et ajouter un filtre après le filtre <code>date</code> :
+<pre>
+filter {
+    grok {
+        match => { "message" => "%{COMBINEDAPACHELOG}"}
+    }
+    date {
+        # exemple de date: 04/Jan/2015:05:13:42 +0000
+        match => [ "timestamp", "dd/MMM/YYYY:HH:mm:ss Z" ]
+    }
+    mutate {
+        convert => {
+            "bytes" => "integer"
+            "response" => "integer"
+        }
+    }
+}
+</pre>
+        </p>
+        <div class="alert alert-warning" role="alert">
+          <p><strong>Attention</strong></p>
+          <p>
+            Un champ ne doit être typé directement dans LogStash que si aucune valeur invalide ne peut être présente en entrée. Si l'on n'est pas certain à 100% de cela, il ne faut pas typer le champ et laisser Logstash le traiter en tant que chaîne de caractères. En effet, si une valeur invalide se trouve dans un champ à convertir (par exemple, une lettre dans un champ à convertir en entier), LogStash émettra une erreur et cessera tout traitement sur ce message, qui ne sera jamais transmis en sortie et disparaîtra.
+          </p>
+        </div>
+        <p>
+          <span class="glyphicon glyphicon-hand-right" ></span>
+          N'oubliez pas de supprimer le fichier <code>.sincedb_*</code> puis redémarrez LogStash avec la même commande que précédemment.
+<pre>
+$ /home/elk/atelier/logstash-2.1.0/bin/logstash agent -f '/home/elk/atelier/logstash.conf'
+Settings: Default filter workers: 2
+Logstash startup completed
+{"message":"83.149.9.216 - - [04/Jan/2015:05:13:42 +0000] \"GET /presentations/logstash-monitorama-2013/images/kibana-search.png HTTP/1.1\" 200 203023 \"http://semicomplete.com/presentations/logstash-monitorama-2013/\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\"","@version":"1","@timestamp":"2015-01-04T05:13:42.000Z","host":"claire-i5","path":"/home/claire/Documents/atelier_es_mydir/logstash-tutorial-small.log","clientip":"83.149.9.216","ident":"-","auth":"-","timestamp":"04/Jan/2015:05:13:42 +0000","verb":"GET","request":"/presentations/logstash-monitorama-2013/images/kibana-search.png","httpversion":"1.1","response":200,"bytes":203023,"referrer":"\"http://semicomplete.com/presentations/logstash-monitorama-2013/\"","agent":"\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\""}^CSIGINT received. Shutting down the pipeline. {:level=>:warn}
+Logstash shutdown completed
+</pre>
+        </p>
+        <p>
+          On voit que les champs <code>bytes</code> et <code>response</code> sont maintenant des entiers : ils ne sont pas encadrés par des doubles quotes.
+<pre>
+...,"response":200,"bytes":203023,...
+</pre>
         </p>
         <p>
         En cas de soucis, voici <a href="./files/logstash_p1.conf" >le fichier <code>logstash.conf</code></a> obtenu à la fin de cette partie.
@@ -437,8 +484,8 @@ output {
         "verb":"GET",
         "request":"/presentations/logstash-monitorama-2013/images/kibana-search.png",
         "httpversion":"1.1",
-        "response":"200",
-        "bytes":"203023",
+        "response":200,
+        "bytes":203023,
         "referrer":"\"http://semicomplete.com/presentations/logstash-monitorama-2013/\"",
         "agent":"\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36\""
       }
@@ -496,10 +543,10 @@ output {
   }
 }
 </pre>
-        Ce champ est standard dans LogStash, ElasticSearch l'a reconnu et lui a donc appliqué de lui même le type <code>date</code> avec au choix les 2 formats <code>strict_date_optional_time</code> et <code>epoch_millis</code> (les formats par défaut sont <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats">ici</a>, sinon il est possible d'indiquer son propre format selon la syntaxe de la librairie JodaTime).
+          Ce champ est standard dans LogStash, ElasticSearch l'a reconnu et lui a donc appliqué de lui même le type <code>date</code> avec au choix les 2 formats <code>strict_date_optional_time</code> et <code>epoch_millis</code> (les formats par défaut sont <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats">ici</a>, sinon il est possible d'indiquer son propre format selon la syntaxe de la librairie JodaTime).
         </p>
         <p>
-        Prenons maintenant le champ <code>bytes</code> : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes">http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes</a>
+          Prenons maintenant le champ <code>bytes</code> : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes">http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes</a>
 <pre>
 {
   "logstash-2015.01.04":{
@@ -509,20 +556,7 @@ output {
           "full_name":"bytes",
           "mapping":{
             "bytes":{
-              "type":"string",
-              "norms":{
-                "enabled":false
-              },
-              "fielddata":{
-                "format":"disabled"
-              },
-              "fields":{
-                "raw":{
-                  "type":"string",
-                  "index":"not_analyzed",
-                  "ignore_above":256
-                }
-              }
+              "type":"long"
             }
           }
         }
@@ -531,20 +565,16 @@ output {
   }
 }
 </pre>
-        Il a été détecté comme une chaîne de caractères (<code>"type":"string"</code>), alors que nous savons que c'est un nombre entier. En l'état, nous ne pourrons pas faire de recherche sur les documents où le champ <code>bytes</code> est supérieur à 200 000 par exemple.
+          Grâce au typage du champ en entier réalisé dans LogStash, ElasticSearch a décidé de traiter ce champ comme un entier, de type <code>long</code>. Nous pourrons donc directement faire des recherches concernant les logs dont le champ <code>bytes</code> est supérieur à 200 000 par exemple.
         </p>
         <p>
-        Si on observe le mapping complet, on trouve d'autres champs dont Elasticsearch a mal deviné le type :
-          <ul>
-            <li><code>timestamp</code> (<code>string</code> au lieu d'une date à un format particulier)</li>
-            <li><code>response</code> (<code>string</code> au lieu d'un entier)</li>
-          </ul>
+          Si on observe le mapping complet, on trouve qu'ElasticSearch a mal deviné le type du champ <code>timestamp</code> : il le considère comme une <code>string</code> au lieu d'une date à un format particulier. Nous allons donc devoir indiquer à ElasticSearch la manière dont il devra être interprété via un <em>template</em> (voir <a href="./es_concept.html#mappingandtemplates">l'explication du concept</a>).
         </p>
         <p>
-        Il n'est pas possible de corriger un mapping Elasticsearch sans ré-indexer les données. Comme dans notre cas nous n'avons qu'une seule donnée, nous allons supprimer l'index, et le document et le mapping deviné avec lui, pour pouvoir le reconfigurer proprement et soumettre de nouveau notre ligne de log pour indexation.
+          Il n'est pas possible de corriger un mapping Elasticsearch sans ré-indexer les données. Comme dans notre cas nous n'avons qu'une seule donnée, nous allons supprimer l'index, et le document et le mapping deviné avec lui, pour pouvoir le reconfigurer proprement et soumettre de nouveau notre ligne de log pour indexation.
         </p>
         <p>
-        Deux solutions existent pour supprimer un index. La première est l'installation d'un plugin de monitoring standard d'ElasticSearch, très utile pour consulter rapidement la santé de son cluster, le nombre et le contenu des index ainsi que tout le paramétrage du cluster ou des nœuds : <strong>Head</strong>.
+          Deux solutions existent pour supprimer un index. La première est l'installation d'un plugin de monitoring standard d'ElasticSearch, très utile pour consulter rapidement la santé de son cluster, le nombre et le contenu des index ainsi que tout le paramétrage du cluster ou des nœuds : <strong>Head</strong>.
         </p>
         <p>
           La seconde solution pour supprimer un index dans ElasticSearch est la ligne de commande si on dispose du programme cURL installé :
@@ -600,8 +630,6 @@ curl -XPUT "http://localhost:9200/_template/logs_template" -d '
   "mappings" : {
     "logs" : {
       "properties" : {
-        "bytes" : { "type" : "integer" },
-        "response" : { "type" : "integer" },
         "timestamp" : { "type" : "date", "format" : "dd/MMM/YYYY:HH:mm:ss Z" }
       }
     }
@@ -611,7 +639,7 @@ curl -XPUT "http://localhost:9200/_template/logs_template" -d '
 </pre>
         </p>
         <div class="alert alert-info" role="alert">
-            Pour simplifier, nous ne définissons que les 3 champs qui posaient problème. Pour fiabiliser au maximum l'indexation, il est préférable dans un cas réel de définir l'ensemble des champs pour éviter qu'une valeur "bizarre" ne vienne perturber la configuration automatique des types et empêcher de futures indexations.
+            Pour simplifier, nous ne définissons que le champ qui posait problème. Pour fiabiliser au maximum l'indexation, il est préférable dans un cas réel de définir l'ensemble des champs pour éviter qu'une valeur "bizarre" ne vienne perturber la configuration automatique des types et empêcher de futures indexations.
         </div>
         <p>
           <span class="glyphicon glyphicon-hand-right" ></span>
@@ -623,16 +651,19 @@ curl -XPUT "http://localhost:9200/_template/logs_template" -d '
         </p>
         <p>
           <span class="glyphicon glyphicon-hand-right" ></span>
-          Vérifier le type du champ <code>bytes</code> avec l'URL suivante : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes">http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes</a>. On voit qu'il est bien considéré comme un entier, nous pourrons donc faire des requêtes avec des comparaisons de nombres dessus.
+          Vérifier le type du champ <code>timestamp</code> avec l'URL suivante : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/timestamp">http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes</a>. On voit qu'il est bien considéré comme une date avec le format indiqué.
 <pre>
 {
   "logstash-2015.01.04":{
     "mappings":{
       "logs":{
-        "bytes":{
-          "full_name":"bytes",
+        "timestamp":{
+          "full_name":"timestamp",
           "mapping":{
-            "bytes":{"type":"integer"}
+            "timestamp":{
+              "type":"date",
+              "format":"dd/MMM/YYYY:HH:mm:ss Z"
+            }
           }
         }
       }
