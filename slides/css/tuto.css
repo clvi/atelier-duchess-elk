@@ -1,4 +1,31 @@
+/* Import de la font Glyphicon utilisée sur le tutoriel */
+@font-face {
+  font-family: 'Glyphicons Halflings';
 
+  src: url('../../fonts/glyphicons-halflings-regular.eot');
+  src: url('../../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), 
+		url('../../fonts/glyphicons-halflings-regular.woff2') format('woff2'), 
+		url('../../fonts/glyphicons-halflings-regular.woff') format('woff'), 
+		url('../../fonts/glyphicons-halflings-regular.ttf') format('truetype'), 
+		url('../../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}
+/* Surcharge du style span pour utiliser la font glyphicon */
+span.glyphicon {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.glyphicon-hand-right:before {
+  content: "\e127";
+}
+/* Met le logo duchess en bas du slide sur la page de titre */
 .reveal .caption_title {
     position: absolute; 
     bottom: -200px;
@@ -8,7 +35,7 @@
     border: 0;
     box-shadow: 0px 0px 0px #656565;
 }
-
+/* Augmente l'espace entre le titre des diapos et la suite du texte */
 .reveal h2 {
 	margin-bottom: 100px;
 }

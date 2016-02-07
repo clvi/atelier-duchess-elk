@@ -49,7 +49,7 @@
           <p>
             <small>Par Claire Villard / <a href="http://twitter.com/leneurone_eu">@leneurone_eu</a> / <a href="https://github.com/leneurone/atelier-duchess-elk">GitHub : leneurone</a></small>
           </p>
-          <small class="caption_title"><a href="http://www.duchess-france.org/"><img src="../images/duchess.png" heigth="64px" width="64px" /></a></small>
+          <small class="caption_title"><a href="http://www.duchess-france.org/"><img src="./images/duchess.png" heigth="64px" width="64px" /></a></small>
         </section>
 
         <section>
@@ -65,8 +65,131 @@
 
         <section>
           <p>
-            Retrouvez cette présentation sur GitHub Pages :
+            Retrouvez cette présentation sur GitHub :
             <a href="http://leneurone.github.io/atelier-duchess-elk/slides/index.html">http://leneurone.github.io/atelier-duchess-elk/slides/index.html</a>
+          </p>
+        </section>
+
+        <section>
+          <h2>Programme de l'atelier</h2>
+          <p>Nous allons voir...</p>
+          <p class="fragment">... comment parser un fichier et l'enrichir avec LogStash</p>
+          <p class="fragment">... comment l'indexer dans ElasticSearch</p>
+          <p class="fragment">... et comment exploiter ces données dans Kibana.</p>
+        </section>
+        <section>
+          <h2>Et aussi :</h2>
+          <p>Pour aller plus loin :</p>
+          <p class="fragment">L'utilisation de RabbitMQ comme broker de messages</p>
+          <p class="fragment">Configurer ElasticSearch en cluster</p>
+        </section>
+
+        <section>
+          <h2>LogStash</h2>
+          <p class="fragment">Lit des informations depuis des sources diverses (fichiers, flux syslog, RabbitMQ, ...)</p>
+          <p class="fragment">Les découpe selon des regexp</p>
+          <p class="fragment">Les transforme et les enrichit</p>         
+          <p class="fragment">Et les envoie vers des sorties variées (fichiers, RabbitMQ, ElasticSearch, stdout, syslog...)</p>
+        </section>
+
+        <section>
+          <h2>ElasticSearch</h2>
+          <p>Moteur de recherche</p>
+          <p class="fragment">Indexe des données</p>
+          <p class="fragment">Interprête des requêtes de recherche et renvoie les résultats associés</p>
+          <p class="fragment">Réalise des calculs sur les résultats obtenus (nombre de résultats par catégorie, par date, ...)</p>         
+        </section>
+
+        <section>
+          <h2>Kibana</h2>
+          <p class="fragment">IHM de visualisation de données contenues dans ElasticSearch</p>
+          <p class="fragment">Spécifique à ElasticSearch</p>
+          <p class="fragment">Permet de réaliser des requêtes sur ElasticSearch et d'afficher les résultats sous forme de liste et de graphiques</p>
+          <p class="fragment">Pré-configurée pour traiter des données en provenance de LogStash...</p>         
+        </section>
+
+        <section>
+          <h2>Petit schéma...</h2>
+          <p>
+            <img src="./images/archi.png" />
+          </p>
+        </section>
+
+        <section>
+          <h2>Quelques concepts d'ElasticSearch</h2>
+          <small>Parce qu'il faut comprendre la mécanique interne pour en profiter pleinement</small>
+        </section>
+
+        <section>
+          <h2>Indexation 1/4</h2>
+          <p>ElasticSearch prend les données présentées en entrée, et les traite pour pouvoir retrouver rapidement les documents qui contiennent certaines données</p>
+          <p>
+            Les données indexées sont stockées dans des <em>index</em> : sorte de répertoire dans lequel on va demander à ElasticSearch de rechercher. 
+          </p>
+        </section>
+
+        <section>
+          <h2>Indexation 2/4</h2>
+          <p>
+            Il peut indexer soit les données "telles qu'elles", soit après leur avoir appliqué des transformations pour faciliter leur recherche : passage en minuscule, découpage des mots selon les espaces ou d'autres caractères, oubli des accents ou des caractères spéciaux...
+          </p>
+          <p>
+            Dans ce dernier cas, les mêmes transformations seront automatiquement appliquées aux critères de recherche.
+          </p>
+        </section>
+
+        <section>
+          <h2>Indexation 3/4</h2>
+          <p>
+            Pour chaque index, ElasticSearch stocke la manière dont chaque champ de chaque type de document doit être traité dans un <em>mapping</em>.
+          </p>
+        </section>
+
+        <section>
+          <h2>Indexation 4/4</h2>
+          <p>
+            Pour permettre de configurer automatiquement les mappings pour tous les index, notamment ceux qui seront créés dans le futur, on va configurer dans ElasticSearch des <em>templates</em> qui seront automatiquement transformés en mappings lors de la création des futurs index.
+          </p>
+        </section>
+
+        <section>
+          <h2>Représentation des données</h2>
+          <p>
+            Un ensemble de données à indexer ensemble et devant être retourné comme un unique résultat est appelé un <em>document</em>. 
+          </p>
+          <p>
+            La sémantique est identique à celle d'un document écrit qu'on rédige : un ensemble de texte, ainsi que de métadonnées associées classifiant son contenu, ou son auteur...
+          </p>
+        </section>
+
+        <section>
+          <h2>Document</h2>
+          <p>
+            On indique à ElasticSearch les champs que va contenir chaque type de document indexé, ainsi que la manière dont chaque champ devra être interprété. 
+          </p>
+        </section>
+
+        <section>
+          <h2>Stockage physique</h2>
+          <p>
+            Lorsqu'il reçoit des documents à indexer dans un index donné, ElasticSearch les dispatche de manière homogène entre plusieurs <em>shards</em>, contenant chacun une partie des données. 
+          </p>
+          <p>
+            Ces shards sont répliqués, et l'ensemble est réparti au sein du cluster, pour assurer à la fois la scalabilité, les performances, et la tolérance aux pannes.
+          </p>
+
+        </section>
+
+        <section>
+          <h2>Et maintenant...</h2>
+          <p>
+            Place à la pratique !
+          </p>
+          <p>
+            <a href="../index.html#es"><span class="glyphicon glyphicon-hand-right"></span> Aller au tutoriel</a>
+          </p>
+          <p>
+
           </p>
         </section>
 
