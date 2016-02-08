@@ -121,63 +121,61 @@
         </section>
 
         <section>
-          <h2>Indexation 1/4</h2>
-          <p>ElasticSearch prend les données présentées en entrée, et les traite pour pouvoir retrouver rapidement les documents qui contiennent certaines données</p>
+          <h2>Le cluster</h2>
           <p>
-            Les données indexées sont stockées dans des <em>index</em> : sorte de répertoire dans lequel on va demander à ElasticSearch de rechercher. 
+            Un <em>cluster</em> est un ensemble d'instances d'ElasticSearch, installées sur différents serveurs physiques ou virtuels et travaillant ensemble. Les données sont réparties sur les différents serveurs et accessibles indifféremment de leur emplacement pour assurer la montée en charge et la tolérance aux pannes.
           </p>
         </section>
 
         <section>
-          <h2>Indexation 2/4</h2>
-          <p>
-            Il peut indexer soit les données "telles qu'elles", soit après leur avoir appliqué des transformations pour faciliter leur recherche : passage en minuscule, découpage des mots selon les espaces ou d'autres caractères, oubli des accents ou des caractères spéciaux...
-          </p>
-          <p>
-            Dans ce dernier cas, les mêmes transformations seront automatiquement appliquées aux critères de recherche.
+          <h2>Les Index</h2>
+          <p>Lorsqu'on envoie des données à indexer à ElasticSearch, il faut lui préciser dans quel <em>index</em> elles doivent être stockées. Un index est une sorte de répertoire contenant des données, organisées par l'utilisateur lui-même. Cela permet d'éviter de mélanger des données sans rapport au sein d'un même cluster tout en mutualisant les ressources.
           </p>
         </section>
 
         <section>
-          <h2>Indexation 3/4</h2>
+          <h2>Les shards</h2>
+          <p>
+            Chaque index est séparé en un ou plusieurs <em>shards</em>, contenant chacun une partie des données. 
+          </p>
+          <p>
+            Ces shards sont répliqués, et l'ensemble est réparti au sein du cluster, pour assurer à la fois la scalabilité, les performances, et la tolérance aux pannes.
+          </p>
+
+        </section>
+
+        <section>
+          <h2>Le document</h2>
+          <p>
+            Un <em>document</em> est un objet représentant une donnée, et contenant différents champs typés et indexés différemment. C'est l'unité de donnée au sein d'ElasticSearch : un résultat de recherche = un document.
+          </p>
+          <p>
+            La sémantique est identique à celle d'un document écrit qu'on rédige : un ensemble de texte, ainsi que de métadonnées associées classifiant son contenu, son auteur...
+          </p>
+        </section>
+
+        <section>
+          <h2>Les analyseurs</h2>
+          <p>
+            Lors de l'indexation, ElasticSearch peut indexer soit les données "telles qu'elles", soit après leur avoir appliqué des transformations pour faciliter leur recherche : passage en minuscule, découpage des mots selon les espaces ou d'autres caractères, ignorer les accents ou les caractères spéciaux, ...
+          </p>
+          <p>
+            Dans ce dernier cas, les mêmes transformations seront automatiquement appliquées aux critères de recherche. Un ensemble d'opération appliquées à un champ est appelé un <em>analyseur</em>.
+          </p>
+        </section>
+
+        <section>
+          <h2>Mappings</h2>
           <p>
             Pour chaque index, ElasticSearch stocke la manière dont chaque champ de chaque type de document doit être traité dans un <em>mapping</em>.
           </p>
         </section>
 
         <section>
-          <h2>Indexation 4/4</h2>
+          <h2>Templates</h2>
           <p>
             Pour permettre de configurer automatiquement les mappings pour tous les index, notamment ceux qui seront créés dans le futur, on va configurer dans ElasticSearch des <em>templates</em> qui seront automatiquement transformés en mappings lors de la création des futurs index.
           </p>
-        </section>
-
-        <section>
-          <h2>Représentation des données</h2>
-          <p>
-            Un ensemble de données à indexer ensemble et devant être retourné comme un unique résultat est appelé un <em>document</em>. 
-          </p>
-          <p>
-            La sémantique est identique à celle d'un document écrit qu'on rédige : un ensemble de texte, ainsi que de métadonnées associées classifiant son contenu, ou son auteur...
-          </p>
-        </section>
-
-        <section>
-          <h2>Document</h2>
-          <p>
-            On indique à ElasticSearch les champs que va contenir chaque type de document indexé, ainsi que la manière dont chaque champ devra être interprété. 
-          </p>
-        </section>
-
-        <section>
-          <h2>Stockage physique</h2>
-          <p>
-            Lorsqu'il reçoit des documents à indexer dans un index donné, ElasticSearch les dispatche de manière homogène entre plusieurs <em>shards</em>, contenant chacun une partie des données. 
-          </p>
-          <p>
-            Ces shards sont répliqués, et l'ensemble est réparti au sein du cluster, pour assurer à la fois la scalabilité, les performances, et la tolérance aux pannes.
-          </p>
-
         </section>
 
         <section>
