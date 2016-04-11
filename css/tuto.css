@@ -2,5 +2,15 @@ body { padding-top: 70px; }
 
 .footer-links li {
 display: inline;
-padding:0 2px
+padding:0 2px;
+}
+.footer-links li img {
+	margin-top: 10px;
+}
+.footer {
+	background-color: #ffffff
+}
+/* Adds a blank margin at the end of the page to match footer height */
+div.push {
+	height: 60px;
 }
