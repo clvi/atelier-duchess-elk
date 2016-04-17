@@ -150,7 +150,7 @@ Logstash shutdown completed
           Ainsi, pour faire relire à LogStash un fichier déjà lu, il faut enlever la ligne contenant l'inode de ce fichier dans le fichier <code>.sincedb_*</code> correspondant (ou supprimer le fichier entier).
         </p>
         <p>
-          Il est également possible de paramétrer l'endroit où LogStash écrit ses informations et le nom du fichier correspondant pour éviter de polluer le dossier home et rendre le nom plus explicite que <code>.sincedb_1bd0462c651e913184f7efa9f40f84c6</code> :
+          Il est également possible de paramétrer l'endroit où LogStash écrit ses informations et le nom du fichier correspondant pour éviter de polluer le dossier home et rendre le nom plus explicite que <code>.sincedb_1bd0462c651e913184f7efa9f40f84c6</code> (le répertoire indiqué doit avoir été créé auparavant) :
 <pre>
 input {
     # On définit ici les sources de données à traiter
@@ -169,7 +169,7 @@ input {
       </p>
       <p>
         <span class="glyphicon glyphicon-hand-right" ></span>
-        Ouvrir le fichier <code>logstash.conf</code> créé précédemment et ajouter le bloc suivant entre le bloc <code>input</code> et le bloc <code>output</code> :
+        Ouvrir le fichier <code>logstash.conf</code> créé précédemment et ajouter le bloc suivant entre le bloc <code>input</code> et le bloc <code>output</code> (l'explication de cette ligne est plus loin) :
 <pre>
 filter {
     grok {
@@ -198,6 +198,12 @@ $ rm -f /home/elk/atelier/sincedb/sincedb_apache.log
 $ rm -f /home/elk/.sincedb_*
 </pre>
       </p>
+      <div class="alert alert-info" role="alert">
+        Pour lister les fichiers cachés sous Linux :
+<pre>
+$ ls -la &lt;repertoire&gt;
+</pre>
+      </div>
       <p>
         <span class="glyphicon glyphicon-hand-right" ></span>
         Redémarrez LogStash avec la même commande que précédemment.
@@ -635,8 +641,10 @@ curl -XPUT "http://localhost:9200/_template/logs_template" -d '
     }
   }
 }'
-{"acknowledged":true}
 </pre>
+      </p>
+      <p>
+        La réponse à la commande doit être : <code>{"acknowledged":true}</code>
       </p>
       <div class="alert alert-info" role="alert">
         Pour simplifier, nous ne définissons que le champ qui posait problème. Pour fiabiliser au maximum l'indexation, il est préférable dans un cas réel de définir l'ensemble des champs pour éviter qu'une valeur "bizarre" ne vienne perturber la configuration automatique des types et empêcher de futures indexations.
@@ -651,7 +659,7 @@ curl -XPUT "http://localhost:9200/_template/logs_template" -d '
       </p>
       <p>
         <span class="glyphicon glyphicon-hand-right" ></span>
-        Vérifier le type du champ <code>timestamp</code> avec l'URL suivante : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/timestamp">http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes</a>. On voit qu'il est bien considéré comme une date avec le format indiqué.
+        Vérifier le type du champ <code>timestamp</code> avec l'URL suivante : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/timestamp">http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/timestamp</a>. On voit qu'il est bien considéré comme une date avec le format indiqué.
 <pre>
 {
   "logstash-2015.01.04":{
@@ -781,6 +789,14 @@ $ /home/elk/atelier/kibana-4.3.0-linux-x64/bin/kibana
       <p>
         La barre de recherche en haut de l'écran contient par défaut le texte <code>*</code>, qui signifie "tous les documents".
       </p>
+
+      <p>
+        Dans la colonne à gauche de l'écran, Kibana affiche tous les champs disponible dans les données retournées par la recherche, ainsi qu'une répartition des valeurs de chaque champ. Ainsi, si on clique sur le champ <code>response</code>, on voit que 98% des requêtes ont retourné un code 200, 1% un code 404 et 1% un code 304...
+      </p>
+      <p>
+        <img src="./images/kibana_fields_facets.png" />
+      </p>
+      
       <p>
         Pour affiner cette recherche, il est possible de rechercher un mot ou un ensemble de mots. 
       </p>
@@ -849,12 +865,6 @@ $ /home/elk/atelier/kibana-4.3.0-linux-x64/bin/kibana
       </p>
       <p>
         Nous obtenons maintenant bien 3 résultats, correspondant à 3 requêtes faites depuis l'IP 86.1.76.62.
-      </p>
-      <p>
-        Dans la colonne à gauche de l'écran, Kibana affiche tous les champs disponible dans les données retournées par la recherche, ainsi qu'une répartition des valeurs de chaque champ. Ainsi, si on clique sur le champ <code>response</code>, on voit que 98% des requêtes ont retourné un code 200, 1% un code 404 et 1% un code 304...
-      </p>
-      <p>
-        <img src="./images/kibana_fields_facets.png" />
       </p>
       <p>
         L'affichage du tableau des résultats est pour l'instant un peu brut : il affiche uniquement le timestamp et le contenu brut du document tel que stocké dans ElasticSearch. Ce n'est pas très lisible, nous allons donc configurer Kibana pour afficher les informations les plus intéressantes.
