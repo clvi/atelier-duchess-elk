@@ -3,6 +3,8 @@ Tutoriel de l'atelier Duchess ELK
 
 [Accéder au tutoriel sur GitHub Pages](http://leneurone.github.io/atelier-duchess-elk/)
 
+Ce tutoriel a été présenté sous forme d'atelier de 2 heures à la conférence [Mix-IT](http://www.mix-it.fr/session/2822/) à Lyon le 21 avril 2016.
+
 ## Licence
 
 ![Licence Creative Commons](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png)
