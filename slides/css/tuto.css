@@ -45,3 +45,14 @@ span.glyphicon {
 .reveal h2 {
 	margin-bottom: 100px;
 }
+
+
+/* license style in first slide */
+.reveal div.license {
+  margin-top: 25px;
+  color: gray;
+  font-size: 0.4em;
+}
+.reveal div.license img {
+  vertical-align: middle;
+}

@@ -12,5 +12,14 @@ padding:0 2px;
 }
 /* Adds a blank margin at the end of the page to match footer height */
 div.push {
-	height: 60px;
+	height: 70px;
+}
+/* license style in footer */
+.license {
+	color: gray;
+	font-size: 80%;
+	text-align: center;
+}
+.license img {
+	margin-right: 2px;
 }
