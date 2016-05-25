@@ -523,13 +523,13 @@ output {
         En effet, comme nous n'avons pas indiqué à ElasticSearch comment interpréter le type <code>logs</code>, il a dû deviner, et a stocké le résultat de sa tentative dans un <em>mapping</em>.
       </p>
       <p>
-        Comme cela a une grande importance sur la qualité et l'efficacité des recherches faites sur les différents champs (on peut indiquer une plage de dates en critère de recherche, cela ne fonctionnera pas si le champ est une simple chaîne de caractères), il est intéressant de voir comment ElasticSearch a deviné. Pour cela, entrer l'URL suivante dans votre navigateur : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/">http://localhost:9200/logstash-2015.01.04/_mapping/logs/</a>.
+        Comme cela a une grande importance sur la qualité et l'efficacité des recherches faites sur les différents champs (on peut indiquer une plage de dates en critère de recherche, cela ne fonctionnera pas si le champ est une simple chaîne de caractères), il est intéressant de voir comment ElasticSearch a deviné. Pour cela, entrer l'URL suivante dans votre navigateur : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/?pretty">http://localhost:9200/logstash-2015.01.04/_mapping/logs/?pretty</a>.
       </p>
       <p>
         Le résultat est assez verbeux, nous allons donc nous intéresser à certains champs, et notamment ceux qui ne sont pas de simples chaînes de caractères.
       </p>
       <p>
-        Tout d'abord, le champ <code>@timestamp</code> : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/@timestamp">http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/@timestamp</a>
+        Tout d'abord, le champ <code>@timestamp</code> : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/@timestamp?pretty">http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/@timestamp?pretty</a>
 <pre>
 {
   "logstash-2015.01.04":{
@@ -552,7 +552,7 @@ output {
         Ce champ est standard dans LogStash, ElasticSearch l'a reconnu et lui a donc appliqué de lui même le type <code>date</code> avec au choix les 2 formats <code>strict_date_optional_time</code> et <code>epoch_millis</code> (les formats par défaut sont <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats">ici</a>, sinon il est possible d'indiquer son propre format selon la syntaxe de la librairie JodaTime).
       </p>
       <p>
-        Prenons maintenant le champ <code>bytes</code> : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes">http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes</a>
+        Prenons maintenant le champ <code>bytes</code> : <a href="http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes?pretty">http://localhost:9200/logstash-2015.01.04/_mapping/logs/field/bytes?pretty</a>
 <pre>
 {
   "logstash-2015.01.04":{
